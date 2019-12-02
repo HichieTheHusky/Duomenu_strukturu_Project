@@ -6,8 +6,10 @@
 package util;
 
 import java.io.Serializable;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 /**
  *
@@ -38,11 +40,12 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     /**
      * Constructs an empty list with the specified
      * {@link UnrolledLinkedList#nodeCapacity nodeCapacity}. For performance
-     * reasons <tt>nodeCapacity</tt> must be greater than or equal to 8.
+     * reasons <code>nodeCapacity</code> must be greater than or equal to 8.
      *
      * @param nodeCapacity The maximum number of elements that can be stored in
      * a single node.
-     * @throws IllegalArgumentException if <tt>nodeCapacity</tt> is less than 8
+     * @throws IllegalArgumentException if <code>nodeCapacity</code> is less
+     * than 8
      */
     public UnrolledLinkedList(int nodeCapacity) throws IllegalArgumentException {
 
@@ -65,119 +68,617 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
 
     }
 
+    /**
+     * Appends the specified element to the end of this list.
+     *
+     * @param e element to be appended to this list
+     * @return <tt>true</tt> (as specified by {@link Collection#add})
+     */
     @Override
     public boolean add(E e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        insertIntoNode(lastNode, lastNode.numElements, e);
+        return true;
+
     }
 
+    /**
+     * Inserts the specified element at the specified position in this list.
+     * Shifts the element currently at that position (if any) and any subsequent
+     * elements to the right (adds one to their indices).
+     *
+     * @param index index at which the specified element is to be inserted
+     * @param element element to be inserted
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
     @Override
-    public void add(int index, E e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void add(int index, E element) {
+
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        Node node;
+        int p = 0;
+        if (size - index > index) {
+            node = firstNode;
+            while (p <= index - node.numElements) {
+                p += node.numElements;
+                node = node.next;
+            }
+        } else {
+            node = lastNode;
+            p = size;
+            while ((p -= node.numElements) > index) {
+                node = node.previous;
+            }
+        }
+        insertIntoNode(node, index - p, element);
+
     }
 
+    /**
+     * Appends all of the elements in the specified collection to the end of
+     * this list, in the order that they are returned by the specified
+     * collection's iterator. The behavior of this operation is undefined if the
+     * specified collection is modified while the operation is in progress.
+     * (Note that this will occur if the specified collection is this list, and
+     * it's nonempty.)
+     *
+     * @param c collection containing elements to be added to this list
+     * @return <tt>true</tt> if this list changed as a result of the call
+     * @throws NullPointerException if the specified collection is null
+     * @see #add(Object)
+     */
     @Override
     public boolean addAll(int index, List<? extends E> c) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (c == null) {
+            throw new NullPointerException();
+        }
+        boolean changed = false;
+        Iterator<? extends E> it = c.iterator();
+        while (it.hasNext()) {
+            add(it.next());
+            changed = true;
+        }
+        return changed;
+
     }
 
+    /**
+     * Removes all of the elements from this list.
+     */
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        Node node = firstNode.next;
+        while (node != null) {
+            Node next = node.next;
+            node.next = null;
+            node.previous = null;
+            node.elements = null;
+            node = next;
+        }
+        lastNode = firstNode;
+        for (int ptr = 0; ptr < firstNode.numElements; ptr++) {
+            firstNode.elements[ptr] = null;
+        }
+        firstNode.numElements = 0;
+        firstNode.next = null;
+        size = 0;
+
     }
 
+    /**
+     * Returns the element at the specified position in this list.
+     *
+     * @param index index of the element to return
+     * @return the element at the specified position in this list
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
     @Override
     public E get(int index) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        Node node;
+        int p = 0;
+        if (size - index > index) {
+            node = firstNode;
+            while (p <= index - node.numElements) {
+                p += node.numElements;
+                node = node.next;
+            }
+        } else {
+            node = lastNode;
+            p = size;
+            while ((p -= node.numElements) > index) {
+                node = node.previous;
+            }
+        }
+        return (E) node.elements[index - p];
+
     }
 
     @Override
     public int hashCode() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        int hashCode = 1;
+
+        for (Node node = firstNode; node != null; node = node.next) {
+            for (int i = 0; i < node.numElements; i++) {
+                hashCode = 31 * hashCode + (node.elements[i] == null ? 0 : node.elements[i].hashCode());
+            }
+        }
+        return hashCode;
+        
     }
 
+    /**
+     * Returns the index of the first occurrence of the specified element in
+     * this list, or -1 if this list does not contain the element. More
+     * formally, returns the lowest index <tt>i</tt> such that
+     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
+     * or -1 if there is no such index.
+     *
+     * @param o element to search for
+     * @return the index of the first occurrence of the specified element in
+     * this list, or -1 if this list does not contain the element
+     */
     @Override
-    public int indexOf(Object O) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int indexOf(Object o) {
+
+        int index = 0;
+        Node node = firstNode;
+        if (o == null) {
+            while (node != null) {
+                for (int ptr = 0; ptr < node.numElements; ptr++) {
+                    if (node.elements[ptr] == null) {
+                        return index + ptr;
+                    }
+                }
+                index += node.numElements;
+                node = node.next;
+            }
+        } else {
+            while (node != null) {
+                for (int ptr = 0; ptr < node.numElements; ptr++) {
+                    if (o.equals(node.elements[ptr])) {
+                        return index + ptr;
+                    }
+                }
+                index += node.numElements;
+                node = node.next;
+            }
+        }
+        return -1;
+
     }
 
-    @Override
-    public Iterator<E> iterator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+    /**
+     * Returns the index of the last occurrence of the specified element in this
+     * list, or -1 if this list does not contain the element. More formally,
+     * returns the highest index <tt>i</tt> such that
+     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
+     * or -1 if there is no such index.
+     *
+     * @param o element to search for
+     * @return the index of the last occurrence of the specified element in this
+     * list, or -1 if this list does not contain the element
+     */
     @Override
     public int lastIndexOf(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        int index = size;
+        Node node = lastNode;
+        if (o == null) {
+            while (node != null) {
+                index -= node.numElements;
+                for (int i = node.numElements - 1; i >= 0; i--) {
+                    if (node.elements[i] == null) {
+                        return (index + i);
+                    }
+                }
+                node = node.previous;
+            }
+        } else {
+            while (node != null) {
+                index -= node.numElements;
+                for (int i = node.numElements - 1; i >= 0; i--) {
+                    if (o.equals(node.elements[i])) {
+                        return (index + i);
+                    }
+                }
+                node = node.previous;
+            }
+        }
+        return -1;
+
     }
 
+    /**
+     * Returns an iterator over the elements in this list in proper sequence.
+     *
+     * @return an iterator over the elements in this list in proper sequence
+     */
+    @Override
+    public Iterator<E> iterator() {
+
+        return new ULLIterator(firstNode, 0, 0);
+
+    }
+
+    /**
+     * Returns a list iterator over the elements in this list (in proper
+     * sequence).
+     *
+     * @return a list iterator over the elements in this list (in proper
+     * sequence)
+     */
     @Override
     public ListIterator<E> listIterator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        return new ULLIterator(firstNode, 0, 0);
+
     }
 
+    /**
+     * Returns a list-iterator of the elements in this list (in proper
+     * sequence), starting at the specified position in the list. Obeys the
+     * general contract of <tt>List.listIterator(int)</tt>.<p>
+     *
+     * The list-iterator is <i>fail-fast</i>: if the list is structurally
+     * modified at any time after the Iterator is created, in any way except
+     * through the list-iterators own <tt>remove</tt> or <tt>add</tt>
+     * methods, the list-iterator will throw a
+     * <tt>ConcurrentModificationException</tt>. Thus, in the face of concurrent
+     * modification, the iterator fails quickly and cleanly, rather than risking
+     * arbitrary, non-deterministic behaviour at an undetermined time in the
+     * future.
+     *
+     * @param index index of the first element to be returned from the
+     * list-iterator (by a call to <tt>next</tt>)
+     * @return a ListIterator of the elements in this list (in proper sequence),
+     * starting at the specified position in the list
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     * @see List#listIterator(int)
+     */
     @Override
     public ListIterator<E> listIterator(int index) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        Node node;
+        int p = 0;
+        if (size - index > index) {
+            node = firstNode;
+            while (p <= index - node.numElements) {
+                p += node.numElements;
+                node = node.next;
+            }
+        } else {
+            node = lastNode;
+            p = size;
+            while ((p -= node.numElements) > index) {
+                node = node.previous;
+            }
+        }
+        return new ULLIterator(node, index - p, index);
+
     }
 
+    /**
+     * Removes the element at the specified position in this list. Shifts any
+     * subsequent elements to the left (subtracts one from their indices).
+     * Returns the element that was removed from the list.
+     *
+     * @param index the index of the element to be removed
+     * @return the element previously at the specified position
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
     @Override
     public E remove(int index) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        E element = null;
+        Node node;
+        int p = 0;
+        if (size - index > index) {
+            node = firstNode;
+            while (p <= index - node.numElements) {
+                p += node.numElements;
+                node = node.next;
+            }
+        } else {
+            node = lastNode;
+            p = size;
+            while ((p -= node.numElements) > index) {
+                node = node.previous;
+            }
+        }
+        element = (E) node.elements[index - p];
+        removeFromNode(node, index - p);
+        return element;
+
     }
 
+    /**
+     * Removes the first occurrence of the specified element from this list, if
+     * it is present. If this list does not contain the element, it is
+     * unchanged. More formally, removes the element with the lowest index
+     * <tt>i</tt> such that
+     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
+     * (if such an element exists). Returns <tt>true</tt> if this list contained
+     * the specified element (or equivalently, if this list changed as a result
+     * of the call).
+     *
+     * @param o element to be removed from this list, if present
+     * @return <tt>true</tt> if this list contained the specified element
+     */
     @Override
     public boolean remove(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        int index = 0;
+        Node node = firstNode;
+        if (o == null) {
+            while (node != null) {
+                for (int ptr = 0; ptr < node.numElements; ptr++) {
+                    if (node.elements[ptr] == null) {
+                        removeFromNode(node, ptr);
+                        return true;
+                    }
+                }
+                index += node.numElements;
+                node = node.next;
+            }
+        } else {
+            while (node != null) {
+                for (int ptr = 0; ptr < node.numElements; ptr++) {
+                    if (o.equals(node.elements[ptr])) {
+                        removeFromNode(node, ptr);
+                        return true;
+                    }
+                }
+                index += node.numElements;
+                node = node.next;
+            }
+        }
+        return false;
     }
 
+    /**
+     * Removes from this list all of its elements that are contained in the
+     * specified collection.
+     *
+     * @param c collection containing elements to be removed from this list
+     * @return <tt>true</tt> if this list changed as a result of the call
+     * @throws NullPointerException if the specified collection is null
+     * @see #remove(Object)
+     * @see #contains(Object)
+     */
     @Override
     public boolean removeAll(List<?> c) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (c == null) {
+            throw new NullPointerException();
+        }
+        Iterator<?> it = c.iterator();
+        boolean changed = false;
+        while (it.hasNext()) {
+            if (remove(it.next())) {
+                changed = true;
+            }
+        }
+        return changed;
+
     }
 
+    /**
+     * Retains only the elements in this list that are contained in the
+     * specified collection. In other words, removes from this list all the
+     * elements that are not contained in the specified collection.
+     *
+     * @param c collection containing elements to be retained in this list
+     * @return <tt>true</tt> if this list changed as a result of the call
+     * @throws NullPointerException if the specified collection is null
+     * @see #remove(Object)
+     * @see #contains(Object)
+     */
     @Override
     public boolean retainAll(List<?> c) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (c == null) {
+            throw new NullPointerException();
+        }
+        boolean changed = false;
+        for (Node node = firstNode; node != null; node = node.next) {
+            for (int i = 0; i < node.numElements; i++) {
+                if (!c.contains(node.elements[i])) {
+                    removeFromNode(node, i);
+                    i--;
+                    changed = true;
+                }
+            }
+        }
+        return changed;
+
     }
 
+    /**
+     * Replaces the element at the specified position in this list with the
+     * specified element.
+     *
+     * @param index index of the element to replace
+     * @param element element to be stored at the specified position
+     * @return the element previously at the specified position
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
     @Override
     public E set(int index, E element) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        E el = null;
+        Node node;
+        int p = 0;
+        if (size - index > index) {
+            node = firstNode;
+            while (p <= index - node.numElements) {
+                p += node.numElements;
+                node = node.next;
+            }
+        } else {
+            node = lastNode;
+            p = size;
+            while ((p -= node.numElements) > index) {
+                node = node.previous;
+            }
+        }
+        el = (E) node.elements[index - p];
+        node.elements[index - p] = element;
+        return el;
+
     }
 
+    /**
+     * Returns the number of elements in this list.
+     *
+     * @return the number of elements in this list
+     */
     @Override
     public int size() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        return size;
+
     }
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
+        
+        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * Returns an array containing all of the elements in this list in proper
+     * sequence (from first to last element).
+     *
+     * <p>
+     * The returned array will be "safe" in that no references to it are
+     * maintained by this list. (In other words, this method must allocate a new
+     * array). The caller is thus free to modify the returned array.
+     *
+     * <p>
+     * This method acts as bridge between array-based and collection-based APIs.
+     *
+     * @return an array containing all of the elements in this list in proper
+     * sequence
+     */
     @Override
     public Object[] toArray() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        Object[] array = new Object[size];
+        int p = 0;
+        for (Node node = firstNode; node != null; node = node.next) {
+            for (int i = 0; i < node.numElements; i++) {
+                array[p] = node.elements[i];
+                p++;
+            }
+        }
+        return array;
     }
 
+    /**
+     * Returns an array containing all of the elements in this list in proper
+     * sequence (from first to last element).
+     *
+     * <p>
+     * The returned array will be "safe" in that no references to it are
+     * maintained by this list. (In other words, this method must allocate a new
+     * array). The caller is thus free to modify the returned array.
+     *
+     * <p>
+     * This method acts as bridge between array-based and collection-based APIs.
+     *
+     * @return an array containing all of the elements in this list in proper
+     * sequence
+     */
     @Override
     public <T> T[] toArray(T[] a) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (a.length < size) {
+            a = (T[]) java.lang.reflect.Array.newInstance(
+                    a.getClass().getComponentType(), size);
+        }
+        Object[] result = a;
+        int p = 0;
+        for (Node node = firstNode; node != null; node = node.next) {
+            for (int i = 0; i < node.numElements; i++) {
+                result[p] = node.elements[i];
+                p++;
+            }
+        }
+        return a;
+
     }
 
+    /**
+     * Returns <tt>true</tt> if this list contains the specified element. More
+     * formally, returns <tt>true</tt> if and only if this list contains at
+     * least one element <tt>e</tt> such that
+     * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>.
+     *
+     * @param o element whose presence in this list is to be tested
+     * @return <tt>true</tt> if this list contains the specified element
+     */
     @Override
     public boolean contains(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        return (indexOf(o) != -1);
+
     }
 
+    /**
+     * Returns <tt>true</tt> if this list contains all of the elements of the
+     * specified collection.
+     *
+     * @param c collection to be checked for containment in this list
+     * @return <tt>true</tt> if this list contains all of the elements of the
+     * specified collection
+     * @throws NullPointerException if the specified collection is null
+     * @see #contains(Object)
+     */
     @Override
     public boolean containsAll(List<? extends E> c) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (c == null) {
+            throw new NullPointerException();
+        }
+        Iterator<?> it = c.iterator();
+        while (it.hasNext()) {
+            if (!contains(it.next())) {
+                return false;
+            }
+        }
+        return true;
+
     }
 
+    /**
+     * Returns <tt>true</tt> if this list contains no elements.
+     *
+     * @return <tt>true</tt> if this list contains no elements
+     */
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        return (size == 0);
+
     }
 
     private class Node {
@@ -210,4 +711,220 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
             elements = new Object[nodeCapacity];
         }
     }
+
+    /**
+     * Insert an element into the specified node. If the node is already full, a
+     * new node will be created and inserted into the list after the specified
+     * node.
+     *
+     * @param node
+     * @param pos the position at which the element should be inserted into the <code>node.elements<code> array
+     * @param element the element to be inserted
+     */
+    private void insertIntoNode(Node node, int pos, E element) {
+
+        // if the node is full
+        if (node.numElements == nodeCapacity) {
+            // create a new node
+            Node newNode = new Node();
+            // move half of the elements to the new node
+            int elementsToMove = nodeCapacity / 2;
+            int startIndex = nodeCapacity - elementsToMove;
+            int i;
+            for (i = 0; i < elementsToMove; i++) {
+                newNode.elements[i] = node.elements[startIndex + i];
+                node.elements[startIndex + i] = null;
+            }
+            node.numElements -= elementsToMove;
+            newNode.numElements = elementsToMove;
+            // insert the new node into the list
+            newNode.next = node.next;
+            newNode.previous = node;
+            if (node.next != null) {
+                node.next.previous = newNode;
+            }
+            node.next = newNode;
+
+            if (node == lastNode) {
+                lastNode = newNode;
+            }
+
+            // check whether the element should be inserted into
+            // the original node or into the new node
+            if (pos > node.numElements) {
+                node = newNode;
+                pos -= node.numElements;
+            }
+        }
+        for (int i = node.numElements; i > pos; i--) {
+            node.elements[i] = node.elements[i - 1];
+        }
+        node.elements[pos] = element;
+        node.numElements++;
+        size++;
+        modCount++;
+
+    }
+
+    /**
+     * Removes an element from the specified node.
+     *
+     * @param node the node from which an element should be removed
+     * @param ptr the index of the element to be removed within the
+     * <tt>node.elements<tt> array
+     */
+    private void removeFromNode(Node node, int ptr) {
+
+        node.numElements--;
+        for (int i = ptr; i < node.numElements; i++) {
+            node.elements[i] = node.elements[i + 1];
+        }
+        node.elements[node.numElements] = null;
+        if (node.next != null && node.next.numElements + node.numElements <= nodeCapacity) {
+            mergeWithNextNode(node);
+        } else if (node.previous != null && node.previous.numElements + node.numElements <= nodeCapacity) {
+            mergeWithNextNode(node.previous);
+        }
+        size--;
+        modCount++;
+
+    }
+
+    /**
+     * This method does merge the specified node with the next node.
+     *
+     * @param node the node which should be merged with the next node
+     */
+    private void mergeWithNextNode(Node node) {
+
+        Node next = node.next;
+        for (int i = 0; i < next.numElements; i++) {
+            node.elements[node.numElements + i] = next.elements[i];
+            next.elements[i] = null;
+        }
+        node.numElements += next.numElements;
+        if (next.next != null) {
+            next.next.previous = node;
+        }
+        node.next = next.next;
+        if (next == lastNode) {
+            lastNode = node;
+        }
+
+    }
+
+    private class ULLIterator implements ListIterator<E> {
+
+        Node currentNode;
+        int pos;
+        int index;
+
+        private int expectedModCount = modCount;
+
+        ULLIterator(Node node, int ptr, int index) {
+
+            this.currentNode = node;
+            this.pos = ptr;
+            this.index = index;
+
+        }
+
+        @Override
+        public boolean hasNext() {
+
+            return (index < size - 1);
+
+        }
+
+        @Override
+        public E next() {
+
+            pos++;
+            if (pos >= currentNode.numElements) {
+                if (currentNode.next != null) {
+                    currentNode = currentNode.next;
+                    pos = 0;
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+            index++;
+            checkForModification();
+            return (E) currentNode.elements[pos];
+
+        }
+
+        @Override
+        public boolean hasPrevious() {
+
+            return (index > 0);
+
+        }
+
+        @Override
+        public E previous() {
+
+            pos--;
+            if (pos < 0) {
+                if (currentNode.previous != null) {
+                    currentNode = currentNode.previous;
+                    pos = currentNode.numElements - 1;
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+            index--;
+            checkForModification();
+            return (E) currentNode.elements[pos];
+
+        }
+
+        @Override
+        public int nextIndex() {
+
+            return (index + 1);
+
+        }
+
+        @Override
+        public int previousIndex() {
+
+            return (index - 1);
+
+        }
+
+        @Override
+        public void remove() {
+
+            checkForModification();
+            removeFromNode(currentNode, pos);
+
+        }
+
+        @Override
+        public void set(E e) {
+
+            checkForModification();
+            currentNode.elements[pos] = e;
+
+        }
+
+        @Override
+        public void add(E e) {
+
+            checkForModification();
+            insertIntoNode(currentNode, pos + 1, e);
+
+        }
+
+        private void checkForModification() {
+
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+
+        }
+
+    }
+
 }

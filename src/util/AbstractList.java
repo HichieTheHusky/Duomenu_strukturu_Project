@@ -15,11 +15,17 @@ import java.util.ListIterator;
  */
 public abstract class AbstractList<E> implements List<E> {
 
-    @Override
-    public abstract boolean add(E e);
+    protected int modCount;
+
+    public AbstractList() {
+
+    }
 
     @Override
-    public abstract void add(int index, E e);
+    public abstract boolean add(E element);
+
+    @Override
+    public abstract void add(int index, E element);
 
     @Override
     public abstract boolean addAll(int index, List<? extends E> c);
@@ -37,10 +43,10 @@ public abstract class AbstractList<E> implements List<E> {
     public abstract int indexOf(Object O);
 
     @Override
-    public abstract Iterator<E> iterator();
+    public abstract int lastIndexOf(Object o);
 
     @Override
-    public abstract int lastIndexOf(Object o);
+    public abstract Iterator<E> iterator();
 
     @Override
     public abstract ListIterator<E> listIterator();
@@ -74,6 +80,5 @@ public abstract class AbstractList<E> implements List<E> {
 
     @Override
     public abstract <T> T[] toArray(T[] a);
-    
-    
+
 }

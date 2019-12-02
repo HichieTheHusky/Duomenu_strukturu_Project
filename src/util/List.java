@@ -10,7 +10,7 @@ import java.util.ListIterator;
  */
 public interface List<E> {
 
-    public boolean add(E e);
+    public boolean add(E element);
 
     public void add(int index, E element);
 
@@ -34,9 +34,9 @@ public interface List<E> {
 
     public boolean isEmpty();
 
-    public Iterator<E> iterator();
-
     public int lastIndexOf(Object o);
+
+    public Iterator<E> iterator();
 
     public ListIterator<E> listIterator();
 
