@@ -52,7 +52,7 @@ toliau pavizdys jeigu pašalintume 3 o poto 4.
 ```
 
 
-# Pros
+# Privalumai
 
 - Linked List veikia O(n) priejimu. Turint nodes masyvus vietoj vienatiniu objekto sumažina procesu kaina.
 - Taip pat sumažėją atminties naudojamas kiekis palyginus su tradiciniu Linked List.
