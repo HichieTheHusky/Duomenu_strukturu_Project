@@ -8,8 +8,8 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="duomProject.jar" size="11524" download="eager" />
+    <jar href="duomProject.jar" size="47512" download="eager" />
   </resources>
-  <jfx:javafx-desc  width="800" height="600" main-class="ds.proj.gui.MainWindow"  name="duomProject" />
+  <jfx:javafx-desc  width="800" height="600" main-class="ds.proj.demo.GuiDemoExocution"  name="duomProject" />
   <update check="always"/>
 </jnlp>

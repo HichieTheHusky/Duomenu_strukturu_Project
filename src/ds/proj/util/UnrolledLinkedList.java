@@ -5,7 +5,7 @@
  */
 package ds.proj.util;
 
-import com.sun.xml.internal.bind.v2.TODO;
+//import com.sun.xml.internal.bind.v2.TODO;
 import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -22,7 +22,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     /**
      * The maximum number of elements that can be stored in a single node.
      */
-    private int nodeCapacity;
+    protected int nodeCapacity;
 
     /**
      * The current size of this list.
@@ -32,12 +32,12 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     /**
      * The first node of this list.
      */
-    private Node firstNode;
+    protected Node firstNode;
 
     /**
      * The last node of this list.
      */
-    private Node lastNode;
+    protected Node lastNode;
 
     /**
      * Constructs an empty list with the specified
@@ -581,7 +581,8 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
 
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new SubSet(this, fromIndex, toIndex);
+
     }
 
     /**
@@ -702,7 +703,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
 
     }
 
-    private class Node {
+    protected class Node {
 
         /**
          * The next node.
@@ -1031,7 +1032,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
             int hashCode = 1;
 
             int k = 0;
-            for (Node node = super.firstNode; node != null; node = node.next) {
+            for (Node node = parentList.firstNode; node != null; node = node.next) {
                 for (int i = 0; i < node.numElements; i++) {
                     if (k >= startPosition && k <= endPosition) {
                         hashCode = 31 * hashCode + (node.elements[i] == null ? 0 : node.elements[i].hashCode());
@@ -1047,11 +1048,11 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
         public int indexOf(Object o) {
 
             int index = 0;
-            Node node = super.firstNode;
+            Node node = parentList.firstNode;
             if (o == null) {
                 while (node != null) {
                     for (int ptr = 0; ptr < node.numElements; ptr++) {
-                        if (node.elements[ptr] == null && index >= startPosition && index <= endPosition) {
+                        if (node.elements[ptr] == null && (index + ptr) >= startPosition && (index + ptr) <= endPosition) {
                             return index + ptr;
                         }
                     }
@@ -1061,7 +1062,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
             } else {
                 while (node != null) {
                     for (int ptr = 0; ptr < node.numElements; ptr++) {
-                        if (o.equals(node.elements[ptr]) && index >= startPosition && index <= endPosition) {
+                        if (o.equals(node.elements[ptr]) && (index + ptr) >= startPosition && (index + ptr) <= endPosition) {
                             return index + ptr;
                         }
                     }
@@ -1077,12 +1078,12 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
         public int lastIndexOf(Object o) {
 
             int index = size;
-            Node node = super.lastNode;
+            Node node = parentList.lastNode;
             if (o == null) {
                 while (node != null) {
                     index -= node.numElements;
                     for (int i = node.numElements - 1; i >= 0; i--) {
-                        if (node.elements[i] == null && index >= startPosition && index <= endPosition) {
+                        if (node.elements[i] == null && (index + i) >= startPosition && (index + i) <= endPosition) {
                             return (index + i);
                         }
                     }
@@ -1092,7 +1093,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
                 while (node != null) {
                     index -= node.numElements;
                     for (int i = node.numElements - 1; i >= 0; i--) {
-                        if (o.equals(node.elements[i]) && index >= startPosition && index <= endPosition) {
+                        if (o.equals(node.elements[i]) && (index + i) >= startPosition && (index + i) <= endPosition) {
                             return (index + i);
                         }
                     }
@@ -1106,14 +1107,14 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
         @Override
         public Iterator<E> iterator() {
 
-            return new ULLIterator(super.firstNode, 0, 0);
+            return listIterator(0);
 
         }
 
         @Override
         public ListIterator<E> listIterator() {
 
-            return new ULLIterator(super.firstNode, 0, 0);
+            return listIterator(0);
 
         }
 
@@ -1128,13 +1129,13 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
             Node node;
             int p = 0;
             if (size - index > index) {
-                node = super.firstNode;
+                node = parentList.firstNode;
                 while (p <= index - node.numElements) {
                     p += node.numElements;
                     node = node.next;
                 }
             } else {
-                node = super.lastNode;
+                node = parentList.lastNode;
                 p = size;
                 while ((p -= node.numElements) > index) {
                     node = node.previous;
@@ -1155,20 +1156,20 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
             Node node;
             int p = 0;
             if (size - index > index) {
-                node = super.firstNode;
+                node = parentList.firstNode;
                 while (p <= index - node.numElements) {
                     p += node.numElements;
                     node = node.next;
                 }
             } else {
-                node = super.lastNode;
+                node = parentList.lastNode;
                 p = size;
                 while ((p -= node.numElements) > index) {
                     node = node.previous;
                 }
             }
             element = (E) node.elements[index - p];
-            super.removeFromNode(node, index - p);
+            parentList.removeFromNode(node, index - p);
             return element;
 
         }
@@ -1177,12 +1178,12 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
         public boolean remove(Object o) {
 
             int index = startPosition;
-            Node node = super.firstNode;
+            Node node = parentList.firstNode;
             if (o == null) {
                 while (node != null) {
                     for (int ptr = 0; ptr < node.numElements; ptr++) {
                         if (node.elements[ptr] == null && index <= endPosition) {
-                            super.removeFromNode(node, ptr);
+                            parentList.removeFromNode(node, ptr);
                             return true;
                         }
                     }
@@ -1193,7 +1194,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
                 while (node != null) {
                     for (int ptr = 0; ptr < node.numElements; ptr++) {
                         if (o.equals(node.elements[ptr]) && index <= endPosition) {
-                            super.removeFromNode(node, ptr);
+                            parentList.removeFromNode(node, ptr);
                             return true;
                         }
                     }
@@ -1230,10 +1231,10 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
             boolean changed = false;
             int index = 0;
 
-            for (Node node = super.firstNode; node != null; node = node.next) {
+            for (Node node = parentList.firstNode; node != null; node = node.next) {
                 for (int i = 0; i < node.numElements; i++) {
                     if (!c.contains(node.elements[i]) && index >= startPosition && index <= endPosition) {
-                        super.removeFromNode(node, i);
+                        parentList.removeFromNode(node, i);
                         i--;
                         changed = true;
                     }
@@ -1255,13 +1256,13 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
             Node node;
             int p = 0;
             if (size - index > index) {
-                node = super.firstNode;
+                node = parentList.firstNode;
                 while (p <= index - node.numElements) {
                     p += node.numElements;
                     node = node.next;
                 }
             } else {
-                node = super.lastNode;
+                node = parentList.lastNode;
                 p = size;
                 while ((p -= node.numElements) > index) {
                     node = node.previous;
@@ -1274,19 +1275,197 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
         }
 
         @Override
+        public List<E> subList(int fromIndex, int toIndex) {
+
+            return new SubSet(this, fromIndex, toIndex);
+
+        }
+
+        @Override
         public Object[] toArray() {
 
             Object[] array = new Object[size];
             int p = 0;
-            for (Node node = super.firstNode; node != null; node = node.next) {
+            int index = 0;
+            for (Node node = parentList.firstNode; node != null; node = node.next) {
                 for (int i = 0; i < node.numElements; i++) {
-                    array[p] = node.elements[i];
-                    p++;
+                    if (index >= startPosition && index <= endPosition) {
+                        array[p] = node.elements[i];
+                        p++;
+                    } else {
+                        index++;
+                    }
                 }
             }
             return array;
         }
 
-    }
+        @Override
+        public <T> T[] toArray(T[] a) {
 
+            if (a.length < size) {
+                a = (T[]) java.lang.reflect.Array.newInstance(
+                        a.getClass().getComponentType(), size);
+            }
+            Object[] result = a;
+            int p = 0;
+            int index = 0;
+            for (Node node = parentList.firstNode; node != null; node = node.next) {
+                for (int i = 0; i < node.numElements; i++) {
+                    if (index >= startPosition && index <= endPosition) {
+                        result[p] = node.elements[i];
+                        p++;
+                    } else {
+                        index++;
+                    }
+                }
+            }
+            return a;
+
+        }
+
+        @Override
+        public boolean contains(Object o) {
+
+            return (indexOf(o) != -1);
+
+        }
+
+        @Override
+        public boolean containsAll(List<? extends E> c) {
+
+            if (c == null) {
+                throw new NullPointerException();
+            }
+            Iterator<?> it = c.iterator();
+            while (it.hasNext()) {
+                if (!contains(it.next())) {
+                    return false;
+                }
+            }
+            return true;
+
+        }
+
+        public boolean isEmpty() {
+
+            return (size == 0);
+
+        }
+
+        private class ULLIterator implements ListIterator<E> {
+
+            Node currentNode;
+            int pos;
+            int index;
+
+            private int expectedModCount = modCount;
+
+            ULLIterator(Node node, int ptr, int index) {
+
+                this.currentNode = node;
+                this.pos = ptr;
+                this.index = index;
+
+            }
+
+            @Override
+            public boolean hasNext() {
+
+                if (index > endPosition) {
+                    return false;
+                } else {
+                    return (index < size - 1);
+                }
+            }
+
+            @Override
+            public E next() {
+
+                pos++;
+                if (pos >= currentNode.numElements) {
+                    if (currentNode.next != null) {
+                        currentNode = currentNode.next;
+                        pos = 0;
+                    } else {
+                        throw new NoSuchElementException();
+                    }
+                }
+                index++;
+                checkForModification();
+                return (E) currentNode.elements[pos];
+
+            }
+
+            @Override
+            public boolean hasPrevious() {
+
+                return (index > startPosition);
+
+            }
+
+            @Override
+            public E previous() {
+
+                pos--;
+                if (pos < 0) {
+                    if (currentNode.previous != null) {
+                        currentNode = currentNode.previous;
+                        pos = currentNode.numElements - 1;
+                    } else {
+                        throw new NoSuchElementException();
+                    }
+                }
+                index--;
+                checkForModification();
+                return (E) currentNode.elements[pos];
+
+            }
+
+            @Override
+            public int nextIndex() {
+
+                return (index + 1);
+
+            }
+
+            @Override
+            public int previousIndex() {
+
+                return (index - 1);
+
+            }
+
+            @Override
+            public void remove() {
+
+                checkForModification();
+                parentList.removeFromNode(currentNode, pos);
+
+            }
+
+            @Override
+            public void set(E e) {
+
+                checkForModification();
+                currentNode.elements[pos] = e;
+
+            }
+
+            @Override
+            public void add(E e) {
+
+                checkForModification();
+                parentList.insertIntoNode(currentNode, pos + 1, e);
+
+            }
+
+            private void checkForModification() {
+
+                if (modCount != expectedModCount) {
+                    throw new ConcurrentModificationException();
+                }
+            }
+        }
+    }
 }
