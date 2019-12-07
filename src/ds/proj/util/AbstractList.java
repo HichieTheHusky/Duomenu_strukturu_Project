@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package util;
+package ds.proj.util;
 
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -26,6 +26,9 @@ public abstract class AbstractList<E> implements List<E> {
 
     @Override
     public abstract void add(int index, E element);
+
+    @Override
+    public abstract boolean addAll(List<? extends E> c);
 
     @Override
     public abstract boolean addAll(int index, List<? extends E> c);

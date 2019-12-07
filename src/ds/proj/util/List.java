@@ -1,4 +1,4 @@
-package util;
+package ds.proj.util;
 
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -13,6 +13,8 @@ public interface List<E> {
     public boolean add(E element);
 
     public void add(int index, E element);
+    
+    public boolean addAll(List<? extends E> c);
 
     public boolean addAll(int index, List<? extends E> c);
 
