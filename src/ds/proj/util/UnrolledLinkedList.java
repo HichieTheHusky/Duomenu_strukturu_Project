@@ -265,7 +265,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
         } else {
             while (node != null) {
                 for (int ptr = 0; ptr < node.numElements; ptr++) {
-                    if (o.equals(node.elements[ptr])) {
+                    if ((node.elements[ptr]).equals(o)) {
                         return index + ptr;
                     }
                 }
@@ -307,7 +307,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
             while (node != null) {
                 index -= node.numElements;
                 for (int i = node.numElements - 1; i >= 0; i--) {
-                    if (o.equals(node.elements[i])) {
+                    if ((node.elements[i]).equals(o)) {
                         return (index + i);
                     }
                 }
@@ -459,7 +459,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
         } else {
             while (node != null) {
                 for (int ptr = 0; ptr < node.numElements; ptr++) {
-                    if (o.equals(node.elements[ptr])) {
+                    if ((node.elements[ptr]).equals(o)) {
                         removeFromNode(node, ptr);
                         return true;
                     }
@@ -1062,7 +1062,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
             } else {
                 while (node != null) {
                     for (int ptr = 0; ptr < node.numElements; ptr++) {
-                        if (o.equals(node.elements[ptr]) && (index + ptr) >= startPosition && (index + ptr) <= endPosition) {
+                        if ((node.elements[ptr].equals(o)) && (index + ptr) >= startPosition && (index + ptr) <= endPosition) {
                             return index + ptr;
                         }
                     }
@@ -1093,7 +1093,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
                 while (node != null) {
                     index -= node.numElements;
                     for (int i = node.numElements - 1; i >= 0; i--) {
-                        if (o.equals(node.elements[i]) && (index + i) >= startPosition && (index + i) <= endPosition) {
+                        if ((node.elements[i].equals(o)) && (index + i) >= startPosition && (index + i) <= endPosition) {
                             return (index + i);
                         }
                     }

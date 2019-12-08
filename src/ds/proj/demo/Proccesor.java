@@ -2,6 +2,7 @@ package ds.proj.demo;
 
 import ds.proj.util.Ks;
 import ds.proj.util.Parsable;
+import ds.proj.util.AditionalFunctions;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -191,7 +192,7 @@ public class Proccesor implements Parsable<Proccesor> {
                     MODELS[tIndex][1],
                     MODELS[tIndex][mIndex],
                     2000 + RANDOM.nextInt(20), // metai tarp 1999 ir 2019
-                    10 + RANDOM.nextDouble() * 200_0); // kaina tarp 10 ir 201_0
+                    ds.proj.util.AditionalFunctions.round((10 + RANDOM.nextDouble() * 200_0),1)); // kaina tarp 10 ir 201_0
         }
 
         public Builder type(String type) {
