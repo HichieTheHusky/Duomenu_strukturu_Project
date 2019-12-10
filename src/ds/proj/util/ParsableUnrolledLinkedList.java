@@ -23,29 +23,46 @@ import java.util.function.Function;
  */
 public class ParsableUnrolledLinkedList<V extends Parsable<V>> extends UnrolledLinkedList<V> implements ParsableList<V> {
 
-    public ParsableUnrolledLinkedList(int initialCapacity) {
+    private final Function<String, V> createFunction; // funkcija bazinio reikšmės objekto kūrimui
+
+    public ParsableUnrolledLinkedList(Function<String, V> createFunction) {
+        super();
+        this.createFunction = createFunction;
+    }
+
+    public ParsableUnrolledLinkedList(int initialCapacity, Function<String, V> createFunction) {
 
         super(initialCapacity);
+        this.createFunction = createFunction;
 
+    }
+
+    @Override
+    public boolean add(String dataString) {
+        return super.add(
+                createElement(dataString));
     }
 
     @Override
     public void load(String filePath) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (filePath == null || filePath.length() == 0) {
+            return;
+        }
+        clear();
+        try (BufferedReader fReader = Files.newBufferedReader(Paths.get(filePath), Charset.defaultCharset())) {
+            fReader.lines()
+                    .map(String::trim)
+                    .filter(line -> !line.isEmpty())
+                    .forEach(this::add);
+        } catch (FileNotFoundException e) {
+            Ks.ern("Tinkamas duomenų failas nerastas: " + e.getLocalizedMessage());
+        } catch (IOException | UncheckedIOException e) {
+            Ks.ern("Failo skaitymo klaida: " + e.getLocalizedMessage());
+        }
     }
 
     @Override
     public void save(String filePath) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void println() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void println(String title) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -70,4 +87,9 @@ public class ParsableUnrolledLinkedList<V extends Parsable<V>> extends UnrolledL
         return result;
     }
 
+    protected V createElement(String data) {
+        return Optional.ofNullable(createFunction)
+                .map(f -> f.apply(data))
+                .orElseThrow(() -> new IllegalStateException("Nenustatyta aibės elementų kūrimo funkcija"));
+    }
 }

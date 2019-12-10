@@ -22,6 +22,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -52,7 +54,6 @@ public class MainWindow extends BorderPane implements EventHandler<ActionEvent> 
     private final GridPane paneParam12Events = new GridPane();
     private final GridPane paneRight = new GridPane();
     private final GridPane paneCenter = new GridPane();
-    private final FlowPane testpaneCenter = new FlowPane();
     private final TextArea taEvents = new TextArea();
     private Panels paneParam01, paneParam02, paneParam1, paneButtons, paneButton;
     private MapTable<String[], String> table, myTable;
@@ -190,9 +191,9 @@ public class MainWindow extends BorderPane implements EventHandler<ActionEvent> 
                     Object source = ae.getSource();
                     KsGui.setFormatStartOfLine(true);
                     if (source.equals(mainWindowMenu.getMenus().get(0).getItems().get(0))) {
-//                        fileChooseMenu();
+                        fileChooseMenu();
                     } else if (source.equals(mainWindowMenu.getMenus().get(0).getItems().get(1))) {
-                        KsGui.ounerr(taEvents, MESSAGES.getString("notImplemented"));
+                        fileSaveMenu();
                     } else if (source.equals(mainWindowMenu.getMenus().get(0).getItems().get(3))) {
                         System.exit(0);
                     } else if (source.equals(mainWindowMenu.getMenus().get(1).getItems().get(0))) {
@@ -203,6 +204,8 @@ public class MainWindow extends BorderPane implements EventHandler<ActionEvent> 
                         alert.showAndWait();
                     } else if (source.equals(mainWindowMenu.getMenus().get(2).getItems().get(2))) {
                         mapGeneration(null);
+                    } else if (source.equals(mainWindowMenu.getMenus().get(2).getItems().get(4))) {
+                        clearListtable();
                     }
                 } catch (ValidationException e) {
                     KsGui.ounerr(taEvents, e.getMessage());
@@ -320,7 +323,7 @@ public class MainWindow extends BorderPane implements EventHandler<ActionEvent> 
     private void filter() {
 
         ParsableUnrolledLinkedList<Proccesor> filtered;
-        filtered = new ParsableUnrolledLinkedList<>(initialCapacity);
+        filtered = new ParsableUnrolledLinkedList<>(initialCapacity, Proccesor::new);
 
         Iterator<Proccesor> it = list.iterator();
 
@@ -499,14 +502,14 @@ public class MainWindow extends BorderPane implements EventHandler<ActionEvent> 
                 list.add(c);
             }
             KsGui.ounArgs(taEvents, MESSAGES.getString("mapPuts"), list.size());
-//else { // Jei failas nurodytas skaitoma iš failo
-//            map.load(filePath);
-//            if (map.isEmpty()) {
-//                KsGui.ounerr(taEvents, MESSAGES.getString("fileWasNotReadOrEmpty"), filePath);
-//            } else {
-//                KsGui.ou(taEvents, MESSAGES.getString("fileWasRead"), filePath);
-//
-//             }
+        } else { // Jei failas nurodytas skaitoma iš failo
+            list.load(filePath);
+            if (list.isEmpty()) {
+                KsGui.ounerr(taEvents, MESSAGES.getString("fileWasNotReadOrEmpty"), filePath);
+            } else {
+                KsGui.ou(taEvents, MESSAGES.getString("fileWasRead"), filePath);
+
+            }
         }
         // Atvaizdis rodomas lentelėje
         table.formTable(initialCapacity * 2 + 1, colWidth);
@@ -521,10 +524,25 @@ public class MainWindow extends BorderPane implements EventHandler<ActionEvent> 
 
     }
 
+    private void clearListtable() {
+        
+        list.clear();
+        // Atvaizdis rodomas lentelėje
+        table.formTable(initialCapacity * 2 + 1, colWidth);
+        String[][] modelList = list.getModelList();
+        table.getItems().clear();
+        table.setItems(FXCollections.observableArrayList(modelList));
+
+        IntStream.of(2, 3, 4).forEach(p -> paneButtons.getButtons().get(p).setDisable(false));
+
+        KsGui.ou(taEvents, MESSAGES.getString("clearedList"));
+
+    }
+
     private void createList() {
 
-        this.list = new ParsableUnrolledLinkedList<>(initialCapacity);
-        this.mylist = new ParsableUnrolledLinkedList<>(initialCapacity);
+        this.list = new ParsableUnrolledLinkedList<>(initialCapacity, Proccesor::new);
+        this.mylist = new ParsableUnrolledLinkedList<>(initialCapacity, Proccesor::new);
 
     }
 
@@ -552,6 +570,51 @@ public class MainWindow extends BorderPane implements EventHandler<ActionEvent> 
         }
 
         return result;
+    }
+
+    private void fileChooseMenu() {
+
+        FileChooser fc = new FileChooser();
+        // Papildoma mūsų sukurtais filtrais
+        fc.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("All Files", "*.*"),
+                new FileChooser.ExtensionFilter("txt", "*.txt")
+        );
+        fc.setTitle((MESSAGES.getString("menuItem11")));
+        fc.setInitialDirectory(new File(System.getProperty("user.dir")));
+        File file = fc.showOpenDialog(stage);
+        if (file != null) {
+            mapGeneration(file.getAbsolutePath());
+        }
+
+    }
+
+    private void fileSaveMenu() throws ValidationException, IOException {
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("All Files", "*.*"),
+                new FileChooser.ExtensionFilter("txt", "*.txt")
+        );
+        fc.setTitle((MESSAGES.getString("menuItem12")));
+        fc.setInitialDirectory(new File(System.getProperty("user.dir")));
+
+        File file = fc.showSaveDialog(stage);
+        if (file != null) {
+            filesaver(file.getAbsolutePath());
+        }
+
+    }
+
+    private void filesaver(String filePath) throws ValidationException, IOException {
+//            Files.write(Paths.get(filePath), (Iterable)proccesorSet);
+        PrintWriter pw = new PrintWriter(filePath);
+
+        Iterator<Proccesor> it = list.iterator();
+        while (it.hasNext()) {
+            pw.println(it.next().ToString_data());
+        }
+        pw.close();
+
     }
 
 }

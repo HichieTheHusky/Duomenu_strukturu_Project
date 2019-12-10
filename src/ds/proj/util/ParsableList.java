@@ -11,13 +11,11 @@ package ds.proj.util;
  */
 public interface ParsableList<V> {
 
+    public boolean add(String dataString);
+
     void load(String filePath);
 
     void save(String filePath);
-
-    void println();
-
-    void println(String title);
 
     /**
      * Grąžina maišos lentelės turinį, skirtą atvaizdavimui JavaFX lentelėse

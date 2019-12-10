@@ -1016,7 +1016,15 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
 
         @Override
         public void clear() {
-            // TODO: implement sublist clear
+            int k = 0;
+            for (Node node = parentList.firstNode; node != null; node = node.next) {
+                for (int i = 0; i < node.numElements; i++) {
+                    if (k >= startPosition && k <= endPosition) {
+                        parentList.remove(node.elements[i]);
+                    }
+                    k++;
+                }
+            }
         }
 
         @Override

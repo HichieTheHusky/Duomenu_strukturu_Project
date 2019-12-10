@@ -56,7 +56,10 @@ public abstract class MainWindowMenu extends MenuBar implements EventHandler<Act
         MenuItem menuItem32 = new MenuItem(MESSAGES.getString("menuItem32"));
         menuItem32.setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.SHIFT_DOWN));
         menuItem32.setOnAction(this);
-        menu3.getItems().addAll(menuItem30, new SeparatorMenuItem(), menuItem31, menuItem32);
+        MenuItem menuItem33 = new MenuItem(MESSAGES.getString("menuItem33"));
+        menuItem33.setAccelerator(new KeyCodeCombination(KeyCode.F5, KeyCombination.SHIFT_DOWN));
+        menuItem33.setOnAction(this);
+        menu3.getItems().addAll(menuItem30, new SeparatorMenuItem(), menuItem31, menuItem32, menuItem33);
 
         getMenus().addAll(menu1, menu2, menu3);
     }
