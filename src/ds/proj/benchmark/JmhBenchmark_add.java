@@ -41,7 +41,6 @@ public class JmhBenchmark_add {
 
     float[] ULLTest = new float[32000];
     float[] listTest = new float[32000];
-    int[] indexes = new int[OPERATION_COUNT];
 
     @Benchmark
     public void unrolledLinkedListObjectAdd(Blackhole bh) {

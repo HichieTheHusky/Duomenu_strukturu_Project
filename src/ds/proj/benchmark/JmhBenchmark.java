@@ -111,13 +111,6 @@ public class JmhBenchmark {
         }
     }
 
-    @Benchmark
-    public void unrolledLinkedListObjectAdd(Blackhole bh) {
-        for (int i : indexes) {
-            bh.consume(ULL.add(ULLTest[i]));
-        }
-    }
-
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(JmhBenchmark.class.getSimpleName())
