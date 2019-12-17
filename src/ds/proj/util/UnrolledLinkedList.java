@@ -20,34 +20,34 @@ import java.util.NoSuchElementException;
 public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, Serializable {
 
     /**
-     * The maximum number of elements that can be stored in a single node.
+     * Maksimalus elementu skaicius viename mazge.
      */
     protected int nodeCapacity;
 
     /**
-     * The current size of this list.
+     * dabartinis saraso dydis
      */
     private int size = 0;
 
     /**
-     * The first node of this list.
+     * pirmas saraso mazgas
      */
     protected Node firstNode;
 
     /**
-     * The last node of this list.
+     * paskutinis saraso mazgas
      */
     protected Node lastNode;
 
     /**
-     * Constructs an empty list with the specified
-     * {@link UnrolledLinkedList#nodeCapacity nodeCapacity}. For performance
-     * reasons <code>nodeCapacity</code> must be greater than or equal to 8.
+     * sukonstruoja specifikuoto didzio sarasa
+     * {@link UnrolledLinkedList#nodeCapacity nodeCapacity}. Del pagreitinto
+     * veikimo <code>nodeCapacity</code> turi buti didesnis uz 8.
      *
-     * @param nodeCapacity The maximum number of elements that can be stored in
-     * a single node.
-     * @throws IllegalArgumentException if <code>nodeCapacity</code> is less
-     * than 8
+     * @param nodeCapacity Maksimalus elementu skaicius viename mazge.
+     *
+     * @throws IllegalArgumentException if <code>nodeCapacity</code> yra
+     * mazesnis uz 8
      */
     public UnrolledLinkedList(int nodeCapacity) throws IllegalArgumentException {
 
@@ -61,8 +61,9 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Constructs an empty list with
-     * {@link UnrolledLinkedList#nodeCapacity nodeCapacity} of 16.
+     * sukonstruoja tuscia sarasa su
+     * {@link UnrolledLinkedList#nodeCapacity nodeCapacity} kuris yra nustatytas
+     * 16.
      */
     public UnrolledLinkedList() {
 
@@ -71,10 +72,10 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Appends the specified element to the end of this list.
+     * Prideda specifikuota elementa i saraso gala
      *
-     * @param e element to be appended to this list
-     * @return <code>true</code> (as specified by {@link Collection#add})
+     * @param e elementas kuris bus idetas
+     * @return <code>true</code> (paremtas pagal {@link Collection#add})
      */
     @Override
     public boolean add(E e) {
@@ -85,12 +86,12 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Inserts the specified element at the specified position in this list.
-     * Shifts the element currently at that position (if any) and any subsequent
-     * elements to the right (adds one to their indices).
+     * ideda specifikuota elementa i specifikuota vieta ( index ) sarase
+     * pajudina tolimesnius elementus ( jeigu tokiu yra ) i desine puse (
+     * prideda +1 prie tolimesniu elementu indekso )
      *
-     * @param index index at which the specified element is to be inserted
-     * @param element element to be inserted
+     * @param index indeksas kurio vietoje bus idejimas
+     * @param element elementas kuris bus idetas
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     @Override
@@ -119,16 +120,14 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Appends all of the elements in the specified collection to the end of
-     * this list, in the order that they are returned by the specified
-     * collection's iterator.The behavior of this operation is undefined if the
-     * specified collection is modified while the operation is in progress.
-     * (Note that this will occur if the specified collection is this list, and
-     * it's nonempty.)
+     * prideda visus elementus is nurodytos kolekcijos i dabartini sarasa
+     * pridejimo eiliskumas yra nustatytas pagal paduotos kolekcijos savo turima
+     * iteratoriu.
      *
      * @param index
-     * @param c collection containing elements to be added to this list
-     * @return <code>true</code> if this list changed as a result of the call
+     * @param c collection su elementais kurie bus prideti i si sarasa
+     * @return <code>true</code> jeigu sis sarasas buvo pakeistas del sios
+     * klases metodo iskvietimo
      * @throws NullPointerException if the specified collection is null
      * @see #add(Object)
      */
@@ -148,6 +147,19 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
 
     }
 
+    /**
+     * *
+     * prideda visus elementus is nurodytos kolekcijos i dabartini sarasa
+     * pridejimo eiliskumas yra nustatytas pagal paduotos kolekcijos savo turima
+     * iteratoriu. Pridejimo vieta yra pagal paduota indeksa.
+     *
+     * @param index collection su elementais kurie bus prideti i si sarasa
+     * @param c collection su elementais kurie bus prideti i si sarasa
+     * @return <code>true</code> jeigu sis sarasas buvo pakeistas del sios
+     * klases metodo iskvietimo
+     * @throws NullPointerException if the specified collection is null
+     * @see #add(Object)
+     */
     public boolean addAll(int index, List<? extends E> c) {
         if (c == null) {
             throw new NullPointerException();
@@ -167,7 +179,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Removes all of the elements from this list.
+     * Pasalina visus elementus is dabartinio saraso.
      */
     @Override
     public void clear() {
@@ -191,10 +203,10 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Returns the element at the specified position in this list.
+     * grazina elementa kuris yra specifikuotame indekse
      *
-     * @param index index of the element to return
-     * @return the element at the specified position in this list
+     * @param index indeksas elemento kuris bus grazinamas
+     * @return grazina elementa kuris yra specifikuotame indekse
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     @Override
@@ -222,6 +234,10 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
 
     }
 
+    /**
+     * grazina saraso hashCode
+     * @return
+     */
     @Override
     public int hashCode() {
 
@@ -237,15 +253,16 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Returns the index of the first occurrence of the specified element in
-     * this list, or -1 if this list does not contain the element. More
-     * formally, returns the lowest index <code>i</code> such that
+     * grazina indeksa pirmos pasitaikusios pozicijos kurioje rastas
+     * specifikuoto elemento siame sarasa, arba -1 jeigu sis sarasas 
+     * neturi nurodyto elemento. Formaliau grazina zemiausia indeksa 
+     * <code>i</code> kuris grazina true siuo kodu
      * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>,
      * or -1 if there is no such index.
      *
-     * @param o element to search for
-     * @return the index of the first occurrence of the specified element in
-     * this list, or -1 if this list does not contain the element
+     * @param o elementas kuris bus jieskomas
+     * @return zemiausia indeksa nurodyto elemento siame sarase arba -1 jeigu
+     * toks elementas nera surastas
      */
     @Override
     public int indexOf(Object o) {
@@ -278,15 +295,16 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Returns the index of the last occurrence of the specified element in this
-     * list, or -1 if this list does not contain the element. More formally,
-     * returns the highest index <code>i</code> such that
+     * grazina indeksa paskutinios pasitaikusios pozicijos kurioje rastas
+     * specifikuoto elemento siame sarasa, arba -1 jeigu sis sarasas 
+     * neturi nurodyto elemento. Formaliau grazina auksciausia indeksa 
+     * <code>i</code> kuris grazina true siuo kodu
      * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>,
      * or -1 if there is no such index.
      *
-     * @param o element to search for
-     * @return the index of the last occurrence of the specified element in this
-     * list, or -1 if this list does not contain the element
+     * @param o elementas kuris bus jieskomas
+     * @return zemiausia indeksa nurodyto elemento siame sarase arba -1 jeigu
+     * toks elementas nera surastas
      */
     @Override
     public int lastIndexOf(Object o) {
@@ -319,9 +337,10 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Returns an iterator over the elements in this list in proper sequence.
+     * grazina iterariu per sios sarasa elementus taisiklingame eiliskume
      *
-     * @return an iterator over the elements in this list in proper sequence
+     * @return grazina iterariu per sios sarasa elementus 
+     * taisiklingame eiliskume
      */
     @Override
     public Iterator<E> iterator() {
@@ -331,11 +350,11 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Returns a list iterator over the elements in this list (in proper
-     * sequence).
+     * grazina list tipo iterariu per sios sarasa elementus
+     * taisiklingame eiliskume
      *
-     * @return a list iterator over the elements in this list (in proper
-     * sequence)
+     * @return grazina list tipo iterariu per sios sarasa
+     * elementus taisiklingame eiliskume
      */
     @Override
     public ListIterator<E> listIterator() {
@@ -345,25 +364,16 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Returns a list-iterator of the elements in this list (in proper
-     * sequence), starting at the specified position in the list. Obeys the
-     * general contract of <code>List.listIterator(int)</code>.<p>
+     * 
+     * grazina list tipo iteratoriu per sios saraso elementus
+     * ( taisiklingame elementu eiliskume ), pradetant nuo
+     * nurodyto indekso siame sarase.  
      *
-     * The list-iterator is <i>fail-fast</i>: if the list is structurally
-     * modified at any time after the Iterator is created, in any way except
-     * through the list-iterators own <code>remove</code> or <code>add</code>
-     * methods, the list-iterator will throw a
-     * <code>ConcurrentModificationException</code>. Thus, in the face of
-     * concurrent modification, the iterator fails quickly and cleanly, rather
-     * than risking arbitrary, non-deterministic behaviour at an undetermined
-     * time in the future.
-     *
-     * @param index index of the first element to be returned from the
-     * list-iterator (by a call to <code>next</code>)
-     * @return a ListIterator of the elements in this list (in proper sequence),
-     * starting at the specified position in the list
+     * @param index indeksas pirmo elemento kuris bus graziniamas suo
+     * list tipo iteratoriumi ( naudojant metoda <code>next</code>)
+     * @return grazina list tipo iterariu per sios sarasa
+     * elementus taisiklingame eiliskume
      * @throws IndexOutOfBoundsException {@inheritDoc}
-     * @see List#listIterator(int)
      */
     @Override
     public ListIterator<E> listIterator(int index) {
@@ -391,12 +401,13 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Removes the element at the specified position in this list. Shifts any
-     * subsequent elements to the left (subtracts one from their indices).
-     * Returns the element that was removed from the list.
+     * 
+     * pasalina elementas is specifikuotos posicijos (indekso ) siame sarasa
+     * Pastumia visus toliau einancius elementus i kaire per viena ( indeksa
+     * sumazina 1 ) grazina true jei elementas buvo pasalintas is saraso
      *
-     * @param index the index of the element to be removed
-     * @return the element previously at the specified position
+     * @param index indeksas elemento kuris bus pasalinamas
+     * @return grazina elementa kuris buvo nurodytame indekse
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     @Override
@@ -428,17 +439,18 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Removes the first occurrence of the specified element from this list, if
-     * it is present. If this list does not contain the element, it is
-     * unchanged. More formally, removes the element with the lowest index
-     * <code>i</code> such that
+     * 
+     * Pasalina pirmaji pasitaikusi pasirodyma nurodyto elemento is dabartinio
+     * saraso , jeigu toks elementas yra sarase, jeigu elementas neegzistuoja
+     * siame sarase tada sarasas yra nepakeiciamas. Formaliai , pasalinamas 
+     * elementas su paciu maziausiausiu indeksu <code>i</code> kai galioja salyga
      * <code>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</code>
-     * (if such an element exists). Returns <code>true</code> if this list
-     * contained the specified element (or equivalently, if this list changed as
-     * a result of the call).
+     * (jeigu toks elementas egzistuoja). grazina <code>true</code> jeigu sis
+     * sarasas turejo specifikuota elementa ( kitaip tariant , sarasas
+     * buvo pakeistas del metodo iskvietimo
      *
-     * @param o element to be removed from this list, if present
-     * @return <code>true</code> if this list contained the specified element
+     * @param o elementas kuris bus istriniamas jeigu bus rastas
+     * @return <code>true</code> jeigu sis sarasas turejo nurodyta elementas
      */
     @Override
     public boolean remove(Object o) {
@@ -472,11 +484,12 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Removes from this list all of its elements that are contained in the
-     * specified collection.
+     * 
+     * pasalina visus elementus is sios saraso kurie yra nurodytame sarase
      *
-     * @param c collection containing elements to be removed from this list
-     * @return <code>true</code> if this list changed as a result of the call
+     * @param c kolekcija turinti elementu sarasa kuris bus istriniamas
+     * @return <code>true</code> jeigu sis sarasas buvo pakeistas del 
+     * metodo iskvietimo
      * @throws NullPointerException if the specified collection is null
      * @see #remove(Object)
      * @see #contains(Object)
@@ -499,12 +512,12 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Retains only the elements in this list that are contained in the
-     * specified collection. In other words, removes from this list all the
-     * elements that are not contained in the specified collection.
+     * 
+     * pasalina visus elementus is sios saraso kurie nera nurodytame sarase
      *
-     * @param c collection containing elements to be retained in this list
-     * @return <code>true</code> if this list changed as a result of the call
+     * @param c kolekcija turinti elementu sarasa kurie nebus istriniami
+     * @return <code>true</code> jeigu sis sarasas buvo pakeistas del 
+     * metodo iskvietimo
      * @throws NullPointerException if the specified collection is null
      * @see #remove(Object)
      * @see #contains(Object)
@@ -530,12 +543,12 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Replaces the element at the specified position in this list with the
-     * specified element.
+     * 
+     * Nurodyto indekso elemento reiskme pakeicia nurodyta reiksme
      *
-     * @param index index of the element to replace
-     * @param element element to be stored at the specified position
-     * @return the element previously at the specified position
+     * @param index indeksas elemento kuris bus pakeistas
+     * @param element elementas kuris bus patalpintas i nurodyta indeksa
+     * @return elementas kuris priestai buvo nurodytame indekse
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     @Override
@@ -567,9 +580,9 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Returns the number of elements in this list.
+     * grazina elementu skaiciu sarase
      *
-     * @return the number of elements in this list
+     * @return elementu skaiciu sarase
      */
     @Override
     public int size() {
@@ -578,6 +591,15 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
 
     }
 
+    /***
+     * 
+     * grazina sarasasa, kuris yra reference i si sarasa, bet juo galima
+     * vaikscioti tik nuo nurodyto indekso iki nurodyto indekso
+     * 
+     * @param fromIndex naujo reference i si sarasa pradzios indekas
+     * @param toIndex naujo reference i si sarasa pabaigos indekas
+     * @return 
+     */
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
 
@@ -586,8 +608,9 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     }
 
     /**
-     * Returns an array containing all of the elements in this list in proper
-     * sequence (from first to last element).
+     * 
+     * Grazina masyva turinti visus sio saraso elementus taisiklingame
+     * eiliskume nuo pradzios indekso iki pabaigos indekso.
      *
      * <p>
      * The returned array will be "safe" in that no references to it are
