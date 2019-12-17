@@ -3,12 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/lukas/Documents/GitHub/duomProject/src/ds/proj/gui/MainWindow.java</file>
-            <file>file:/C:/Users/lukas/Documents/GitHub/duomProject/src/ds/proj/benchmark/JmhBenchmark_add.java</file>
-            <file>file:/C:/Users/lukas/Documents/GitHub/duomProject/src/ds/proj/benchmark/JmhBenchmark.java</file>
-            <file>file:/C:/Users/lukas/Documents/GitHub/duomProject/src/ds/proj/util/UnrolledLinkedList.java</file>
-            <file>file:/C:/Users/lukas/Documents/GitHub/duomProject/src/ds/proj/gui/messages.properties</file>
-            <file>file:/C:/Users/lukas/Documents/GitHub/duomProject/src/ds/proj/benchmark/JmhBenchmark_removeIndex.java</file>
+            <file>file:/home/husky/Documents/GitHub/duomProject/test/ds/proj/util/UnrolledLinkedListTest.java</file>
+            <file>file:/home/husky/Documents/GitHub/duomProject/src/ds/proj/util/UnrolledLinkedList.java</file>
         </group>
     </open-files>
 </project-private>

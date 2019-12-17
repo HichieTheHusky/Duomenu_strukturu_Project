@@ -326,7 +326,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     @Override
     public Iterator<E> iterator() {
 
-        return new ULLIterator(firstNode, 0, 0);
+        return new ULLIterator(firstNode, -1, -1);
 
     }
 
@@ -340,7 +340,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
     @Override
     public ListIterator<E> listIterator() {
 
-        return new ULLIterator(firstNode, 0, 0);
+        return new ULLIterator(firstNode, -1, -1);
 
     }
 
@@ -386,7 +386,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
                 node = node.previous;
             }
         }
-        return new ULLIterator(node, index - p, index);
+        return new ULLIterator(node, index - p - 1, index - 1);
 
     }
 
