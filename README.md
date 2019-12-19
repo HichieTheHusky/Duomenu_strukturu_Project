@@ -1,5 +1,14 @@
+# Reikalingi dependencies
+
+- commons-math3-3.6.1
+- jmh-core-1.22
+- jmh-generator-annprocess-1.22
+- Hamcrest 1.3
+- JUnit 4.12
+
+
 # P175B014 Duomenų struktūros projektas Unrolled Linked List
- 
+
 Šita repositorija turi P175B014 Duomenų struktūros 4th semestro užduoti ,tiksliau modulio kursinis projektas kurio pagrindinis tikslas įgyvendinti pasirinkta duomenu struktūra. Konkreti duomenų struktūra pasirinkta įgyvendinti Unrolled Linked List.
 
 # Darbo tikslai:
