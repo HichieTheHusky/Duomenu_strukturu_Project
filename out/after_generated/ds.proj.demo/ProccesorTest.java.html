@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProccesorTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$ds_proj_in_Duomenu_strukturu_Project.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.demo</a> &gt; <span class="el_source">ProccesorTest.java</span></div><h1>ProccesorTest.java</h1><pre class="source lang-java linenums">package ds.proj.demo;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+<span class="fc" id="L9">public class ProccesorTest {</span>
+    @Test
+    public void testBuilderBuild() {
+<span class="fc" id="L12">        Proccesor actualBuildResult = (new Proccesor.Builder()).build();</span>
+<span class="fc" id="L13">        assertEquals(&quot;&quot;, actualBuildResult.getBrand());</span>
+<span class="fc" id="L14">        assertEquals(-1, actualBuildResult.getYear());</span>
+<span class="fc" id="L15">        assertEquals(&quot;&quot;, actualBuildResult.getType());</span>
+<span class="fc" id="L16">        assertEquals(-1.0, actualBuildResult.getPrice(), 0.0);</span>
+<span class="fc" id="L17">        assertEquals(&quot;&quot;, actualBuildResult.getModel());</span>
+<span class="fc" id="L18">    }</span>
+
+    @Test
+    public void testBuilderBuild2() {
+<span class="fc" id="L22">        Proccesor.Builder builder = new Proccesor.Builder();</span>
+<span class="fc" id="L23">        builder.price(10.0);</span>
+<span class="fc" id="L24">        Proccesor actualBuildResult = builder.build();</span>
+<span class="fc" id="L25">        assertEquals(&quot;&quot;, actualBuildResult.getBrand());</span>
+<span class="fc" id="L26">        assertEquals(-1, actualBuildResult.getYear());</span>
+<span class="fc" id="L27">        assertEquals(&quot;&quot;, actualBuildResult.getType());</span>
+<span class="fc" id="L28">        assertEquals(10.0, actualBuildResult.getPrice(), 0.0);</span>
+<span class="fc" id="L29">        assertEquals(&quot;&quot;, actualBuildResult.getModel());</span>
+<span class="fc" id="L30">    }</span>
+
+    @Test
+    public void testBuilderBuildRandom() {
+<span class="nc" id="L34">        assertEquals(&quot;AMD&quot;, (new Proccesor.Builder()).buildRandom().getBrand());</span>
+<span class="nc" id="L35">    }</span>
+
+    @Test
+    public void testBuilderConstructor() {
+        // TODO: This test is incomplete.
+        //   Reason: R002 Missing observers.
+        //   Diffblue Cover was unable to create an assertion.
+        //   Add getters for the following fields or make them package-private:
+        //     Builder.type
+        //     Builder.brand
+        //     Builder.model
+        //     Builder.year
+        //     Builder.price
+
+<span class="fc" id="L49">        Proccesor.Builder actualBuilder = new Proccesor.Builder();</span>
+<span class="fc" id="L50">        actualBuilder.brand(&quot;Brand&quot;);</span>
+<span class="fc" id="L51">        actualBuilder.model(&quot;Model&quot;);</span>
+<span class="fc" id="L52">        actualBuilder.price(10.0);</span>
+<span class="fc" id="L53">        actualBuilder.type(&quot;Type&quot;);</span>
+<span class="fc" id="L54">        actualBuilder.year(1);</span>
+<span class="fc" id="L55">    }</span>
+
+    @Test
+    public void testConstructor() {
+<span class="fc" id="L59">        Proccesor actualProccesor = new Proccesor();</span>
+<span class="fc" id="L60">        actualProccesor.setPrice(10.0);</span>
+<span class="fc" id="L61">        assertEquals(&quot;&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L62">        assertEquals(&quot;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L63">        assertEquals(10.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L64">        assertEquals(&quot;&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L65">        assertEquals(-1, actualProccesor.getYear());</span>
+<span class="fc" id="L66">        assertEquals(&quot;_: -1 10,0&quot;, actualProccesor.toString());</span>
+<span class="fc" id="L67">    }</span>
+
+    @Test
+    public void testConstructor2() {
+<span class="fc" id="L71">        Proccesor actualProccesor = new Proccesor(new Proccesor.Builder());</span>
+<span class="fc" id="L72">        assertEquals(&quot;&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L73">        assertEquals(-1, actualProccesor.getYear());</span>
+<span class="fc" id="L74">        assertEquals(&quot;&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L75">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L76">        assertEquals(&quot;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L77">    }</span>
+
+    @Test
+    public void testConstructor3() {
+<span class="fc" id="L81">        Proccesor.Builder builder = new Proccesor.Builder();</span>
+<span class="fc" id="L82">        builder.price(10.0);</span>
+<span class="fc" id="L83">        Proccesor actualProccesor = new Proccesor(builder);</span>
+<span class="fc" id="L84">        assertEquals(&quot;&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L85">        assertEquals(-1, actualProccesor.getYear());</span>
+<span class="fc" id="L86">        assertEquals(&quot;&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L87">        assertEquals(10.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L88">        assertEquals(&quot;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L89">    }</span>
+
+    @Test
+    public void testConstructor4() {
+<span class="fc" id="L93">        Proccesor actualProccesor = new Proccesor(&quot;Data String&quot;);</span>
+<span class="fc" id="L94">        assertEquals(&quot;String&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L95">        assertEquals(-1, actualProccesor.getYear());</span>
+<span class="fc" id="L96">        assertEquals(&quot;Data&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L97">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L98">        assertEquals(&quot;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L99">    }</span>
+
+    @Test
+    public void testConstructor5() {
+<span class="fc" id="L103">        Proccesor actualProccesor = new Proccesor(&quot;&quot;);</span>
+<span class="fc" id="L104">        assertEquals(&quot;&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L105">        assertEquals(-1, actualProccesor.getYear());</span>
+<span class="fc" id="L106">        assertEquals(&quot;&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L107">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L108">        assertEquals(&quot;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L109">    }</span>
+
+    @Test
+    public void testConstructor6() {
+<span class="fc" id="L113">        Proccesor actualProccesor = new Proccesor(&quot;Trūksta duomenų -&gt; &quot;);</span>
+<span class="fc" id="L114">        assertEquals(&quot;duomenų&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L115">        assertEquals(-1, actualProccesor.getYear());</span>
+<span class="fc" id="L116">        assertEquals(&quot;Trūksta&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L117">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L118">        assertEquals(&quot;-&gt;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L119">    }</span>
+
+    @Test
+    public void testConstructor7() {
+<span class="fc" id="L123">        Proccesor actualProccesor = new Proccesor(&quot;Netinkami gamybos metai, turi būti [2000:&quot;);</span>
+<span class="fc" id="L124">        assertEquals(&quot;gamybos&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L125">        assertEquals(-1, actualProccesor.getYear());</span>
+<span class="fc" id="L126">        assertEquals(&quot;Netinkami&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L127">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L128">        assertEquals(&quot;metai,&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L129">    }</span>
+
+    @Test
+    public void testConstructor8() {
+<span class="fc" id="L133">        Proccesor actualProccesor = new Proccesor(&quot;]&quot;);</span>
+<span class="fc" id="L134">        assertEquals(&quot;&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L135">        assertEquals(-1, actualProccesor.getYear());</span>
+<span class="fc" id="L136">        assertEquals(&quot;]&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L137">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L138">        assertEquals(&quot;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L139">    }</span>
+
+    @Test
+    public void testConstructor9() {
+<span class="fc" id="L143">        Proccesor actualProccesor = new Proccesor(&quot;Trūksta duomenų -&gt; 42&quot;);</span>
+<span class="fc" id="L144">        assertEquals(&quot;duomenų&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L145">        assertEquals(42, actualProccesor.getYear());</span>
+<span class="fc" id="L146">        assertEquals(&quot;Trūksta&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L147">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L148">        assertEquals(&quot;-&gt;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L149">    }</span>
+
+    @Test
+    public void testConstructor10() {
+<span class="fc" id="L153">        Proccesor actualProccesor = new Proccesor(&quot;Trūksta duomenų -&gt; 42 Kaina už leistinų ribų [10.0:210000.0]&quot;);</span>
+<span class="fc" id="L154">        assertEquals(&quot;duomenų&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L155">        assertEquals(42, actualProccesor.getYear());</span>
+<span class="fc" id="L156">        assertEquals(&quot;Trūksta&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L157">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L158">        assertEquals(&quot;-&gt;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L159">    }</span>
+
+    @Test
+    public void testConstructor11() {
+<span class="fc" id="L163">        Proccesor actualProccesor = new Proccesor(&quot;Trūksta duomenų -&gt; 4242&quot;);</span>
+<span class="fc" id="L164">        assertEquals(&quot;duomenų&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L165">        assertEquals(4242, actualProccesor.getYear());</span>
+<span class="fc" id="L166">        assertEquals(&quot;Trūksta&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L167">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L168">        assertEquals(&quot;-&gt;&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L169">    }</span>
+
+    @Test
+    public void testConstructor12() {
+<span class="fc" id="L173">        Proccesor actualProccesor = new Proccesor(&quot;Type&quot;, &quot;Brand&quot;, &quot;Model&quot;, 1, 10.0);</span>
+
+<span class="fc" id="L175">        assertEquals(&quot;Brand&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L176">        assertEquals(1, actualProccesor.getYear());</span>
+<span class="fc" id="L177">        assertEquals(&quot;Type&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L178">        assertEquals(10.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L179">        assertEquals(&quot;Model&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L180">    }</span>
+
+    @Test
+    public void testConstructor13() {
+<span class="fc" id="L184">        Proccesor actualProccesor = new Proccesor(&quot;Type&quot;, &quot;Brand&quot;, &quot;Model&quot;, 2000, 10.0);</span>
+
+<span class="fc" id="L186">        assertEquals(&quot;Brand&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L187">        assertEquals(2000, actualProccesor.getYear());</span>
+<span class="fc" id="L188">        assertEquals(&quot;Type&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L189">        assertEquals(10.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L190">        assertEquals(&quot;Model&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L191">    }</span>
+
+    @Test
+    public void testConstructor14() {
+<span class="fc" id="L195">        Proccesor actualProccesor = new Proccesor(&quot;Type&quot;, &quot;Brand&quot;, &quot;Model&quot;, 1, -1.0);</span>
+
+<span class="fc" id="L197">        assertEquals(&quot;Brand&quot;, actualProccesor.getBrand());</span>
+<span class="fc" id="L198">        assertEquals(1, actualProccesor.getYear());</span>
+<span class="fc" id="L199">        assertEquals(&quot;Type&quot;, actualProccesor.getType());</span>
+<span class="fc" id="L200">        assertEquals(-1.0, actualProccesor.getPrice(), 0.0);</span>
+<span class="fc" id="L201">        assertEquals(&quot;Model&quot;, actualProccesor.getModel());</span>
+<span class="fc" id="L202">    }</span>
+
+    @Test
+    public void testParse() {
+<span class="fc" id="L206">        Proccesor proccesor = new Proccesor(&quot;Data String&quot;);</span>
+<span class="fc" id="L207">        proccesor.parse(&quot;Data&quot;);</span>
+<span class="fc" id="L208">        assertEquals(&quot;Data&quot;, proccesor.getType());</span>
+<span class="fc" id="L209">    }</span>
+
+    @Test
+    public void testParse2() {
+<span class="fc" id="L213">        Proccesor proccesor = new Proccesor(&quot;Data String&quot;);</span>
+<span class="fc" id="L214">        proccesor.parse(&quot;Trūksta duomenų -&gt; &quot;);</span>
+<span class="fc" id="L215">        assertEquals(&quot;duomenų&quot;, proccesor.getBrand());</span>
+<span class="fc" id="L216">        assertEquals(&quot;Trūksta&quot;, proccesor.getType());</span>
+<span class="fc" id="L217">        assertEquals(&quot;-&gt;&quot;, proccesor.getModel());</span>
+<span class="fc" id="L218">    }</span>
+
+    @Test
+    public void testParse3() {
+        // TODO: This test is incomplete.
+        //   Reason: R004 No meaningful assertions found.
+        //   Diffblue Cover was unable to create an assertion.
+        //   Make sure that fields modified by parse(String)
+        //   have package-private, protected, or public getters.
+        //   See https://diff.blue/R004 to resolve this issue.
+
+<span class="fc" id="L229">        (new Proccesor(&quot;Data String&quot;)).parse(&quot;&quot;);</span>
+<span class="fc" id="L230">    }</span>
+
+    @Test
+    public void testParse4() {
+<span class="fc" id="L234">        Proccesor proccesor = new Proccesor(&quot;Data String&quot;);</span>
+<span class="fc" id="L235">        proccesor.parse(&quot;Trūksta duomenų -&gt; Trūksta duomenų -&gt; &quot;);</span>
+<span class="fc" id="L236">        assertEquals(&quot;duomenų&quot;, proccesor.getBrand());</span>
+<span class="fc" id="L237">        assertEquals(&quot;Trūksta&quot;, proccesor.getType());</span>
+<span class="fc" id="L238">        assertEquals(&quot;-&gt;&quot;, proccesor.getModel());</span>
+<span class="fc" id="L239">    }</span>
+
+    @Test
+    public void testParse5() {
+<span class="fc" id="L243">        Proccesor proccesor = new Proccesor(&quot;Data String&quot;);</span>
+<span class="fc" id="L244">        proccesor.parse(&quot;Trūksta duomenų -&gt; 42&quot;);</span>
+<span class="fc" id="L245">        assertEquals(&quot;duomenų&quot;, proccesor.getBrand());</span>
+<span class="fc" id="L246">        assertEquals(42, proccesor.getYear());</span>
+<span class="fc" id="L247">        assertEquals(&quot;Trūksta&quot;, proccesor.getType());</span>
+<span class="fc" id="L248">        assertEquals(&quot;-&gt;&quot;, proccesor.getModel());</span>
+<span class="fc" id="L249">    }</span>
+
+    @Test
+    public void testToString_data() {
+<span class="fc" id="L253">        assertEquals(&quot;Data String  -1 -1,0&quot;, (new Proccesor(&quot;Data String&quot;)).ToString_data());</span>
+<span class="fc" id="L254">    }</span>
+
+    @Test
+    public void testEquals() {
+<span class="fc" id="L258">        assertFalse((new Proccesor(&quot;Data String&quot;)).equals(null));</span>
+<span class="fc" id="L259">        assertFalse((new Proccesor(&quot;Data String&quot;)).equals(&quot;Different type to Proccesor&quot;));</span>
+<span class="fc" id="L260">    }</span>
+
+    @Test
+    public void testEquals2() {
+<span class="fc" id="L264">        Proccesor proccesor = new Proccesor(&quot;Data String&quot;);</span>
+<span class="fc" id="L265">        assertTrue(proccesor.equals(proccesor));</span>
+<span class="fc" id="L266">        int expectedHashCodeResult = proccesor.hashCode();</span>
+<span class="fc" id="L267">        assertEquals(expectedHashCodeResult, proccesor.hashCode());</span>
+<span class="fc" id="L268">    }</span>
+
+    @Test
+    public void testEquals3() {
+<span class="fc" id="L272">        Proccesor proccesor = new Proccesor(&quot;Data String&quot;);</span>
+<span class="fc" id="L273">        Proccesor proccesor1 = new Proccesor(&quot;Data String&quot;);</span>
+<span class="fc" id="L274">        assertTrue(proccesor.equals(proccesor1));</span>
+<span class="fc" id="L275">        int expectedHashCodeResult = proccesor.hashCode();</span>
+<span class="fc" id="L276">        assertEquals(expectedHashCodeResult, proccesor1.hashCode());</span>
+<span class="fc" id="L277">    }</span>
+
+    @Test
+    public void testEquals4() {
+<span class="fc" id="L281">        Proccesor proccesor = new Proccesor(&quot;&quot;);</span>
+<span class="fc" id="L282">        assertFalse(proccesor.equals(new Proccesor(&quot;Data String&quot;)));</span>
+<span class="fc" id="L283">    }</span>
+
+    @Test
+    public void testEquals5() {
+<span class="fc" id="L287">        Proccesor proccesor = new Proccesor(&quot;Type&quot;, &quot;Brand&quot;, &quot;Model&quot;, 1, 10.0);</span>
+<span class="fc" id="L288">        assertFalse(proccesor.equals(new Proccesor(&quot;Data String&quot;)));</span>
+<span class="fc" id="L289">    }</span>
+
+    @Test
+    public void testEquals6() {
+<span class="fc" id="L293">        Proccesor proccesor = new Proccesor(&quot;Data String&quot;);</span>
+<span class="fc" id="L294">        proccesor.setPrice(10.0);</span>
+<span class="fc" id="L295">        assertFalse(proccesor.equals(new Proccesor(&quot;Data String&quot;)));</span>
+<span class="fc" id="L296">    }</span>
+
+    @Test
+    public void testEquals7() {
+<span class="fc" id="L300">        Proccesor proccesor = new Proccesor(&quot;Data StringData String&quot;);</span>
+<span class="fc" id="L301">        assertFalse(proccesor.equals(new Proccesor(&quot;Data String&quot;)));</span>
+<span class="fc" id="L302">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

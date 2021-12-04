@@ -1,0 +1,1503 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnrolledLinkedList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$UnrolledLinkedListTest.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.util</a> &gt; <span class="el_source">UnrolledLinkedList.java</span></div><h1>UnrolledLinkedList.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ds.proj.util;
+
+//import com.sun.xml.internal.bind.v2.TODO;
+import java.io.Serializable;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+
+/**
+ *
+ * @author husky
+ * @param &lt;E&gt;
+ */
+public class UnrolledLinkedList&lt;E&gt; extends AbstractList&lt;E&gt; implements List&lt;E&gt;, Serializable {
+
+    /**
+     * Maksimalus elementu skaicius viename mazge.
+     */
+    protected int nodeCapacity;
+
+    /**
+     * dabartinis saraso dydis
+     */
+<span class="fc" id="L30">    private int size = 0;</span>
+
+    /**
+     * pirmas saraso mazgas
+     */
+    protected Node firstNode;
+
+    /**
+     * paskutinis saraso mazgas
+     */
+    protected Node lastNode;
+
+    /**
+     * sukonstruoja specifikuoto didzio sarasa
+     * {@link UnrolledLinkedList#nodeCapacity nodeCapacity}. Del pagreitinto
+     * veikimo &lt;code&gt;nodeCapacity&lt;/code&gt; turi buti didesnis uz 8.
+     *
+     * @param nodeCapacity Maksimalus elementu skaicius viename mazge.
+     *
+     * @throws IllegalArgumentException if &lt;code&gt;nodeCapacity&lt;/code&gt; yra
+     * mazesnis uz 8
+     */
+<span class="fc" id="L52">    public UnrolledLinkedList(int nodeCapacity) throws IllegalArgumentException {</span>
+
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (nodeCapacity &lt; 8) {</span>
+<span class="nc" id="L55">            throw new IllegalArgumentException(&quot;nodeCapacity &lt; 8&quot;);</span>
+        }
+<span class="fc" id="L57">        this.nodeCapacity = nodeCapacity;</span>
+<span class="fc" id="L58">        firstNode = new Node();</span>
+<span class="fc" id="L59">        lastNode = firstNode;</span>
+
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * sukonstruoja tuscia sarasa su
+     * {@link UnrolledLinkedList#nodeCapacity nodeCapacity} kuris yra nustatytas
+     * 16.
+     */
+    public UnrolledLinkedList() {
+
+<span class="fc" id="L70">        this(16);</span>
+
+<span class="fc" id="L72">    }</span>
+
+    /**
+     * Prideda specifikuota elementa i saraso gala
+     *
+     * @param e elementas kuris bus idetas
+     * @return &lt;code&gt;true&lt;/code&gt; (paremtas pagal {@link Collection#add})
+     */
+    @Override
+    public boolean add(E e) {
+
+<span class="fc" id="L83">        insertIntoNode(lastNode, lastNode.numElements, e);</span>
+<span class="fc" id="L84">        return true;</span>
+
+    }
+
+    /**
+     * ideda specifikuota elementa i specifikuota vieta ( index ) sarase
+     * pajudina tolimesnius elementus ( jeigu tokiu yra ) i desine puse (
+     * prideda +1 prie tolimesniu elementu indekso )
+     *
+     * @param index indeksas kurio vietoje bus idejimas
+     * @param element elementas kuris bus idetas
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
+    @Override
+    public void add(int index, E element) {
+
+<span class="pc bpc" id="L100" title="2 of 4 branches missed.">        if (index &lt; 0 || index &gt; size) {</span>
+<span class="nc" id="L101">            throw new IndexOutOfBoundsException();</span>
+        }
+        Node node;
+<span class="fc" id="L104">        int p = 0;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (size - index &gt; index) {</span>
+<span class="fc" id="L106">            node = firstNode;</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">            while (p &lt;= index - node.numElements) {</span>
+<span class="nc" id="L108">                p += node.numElements;</span>
+<span class="nc" id="L109">                node = node.next;</span>
+            }
+        } else {
+<span class="fc" id="L112">            node = lastNode;</span>
+<span class="fc" id="L113">            p = size;</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">            while ((p -= node.numElements) &gt; index) {</span>
+<span class="nc" id="L115">                node = node.previous;</span>
+            }
+        }
+<span class="fc" id="L118">        insertIntoNode(node, index - p, element);</span>
+
+<span class="fc" id="L120">    }</span>
+
+    /**
+     * prideda visus elementus is nurodytos kolekcijos i dabartini sarasa
+     * pridejimo eiliskumas yra nustatytas pagal paduotos kolekcijos savo turima
+     * iteratoriu.
+     *
+     * @param index
+     * @param c collection su elementais kurie bus prideti i si sarasa
+     * @return &lt;code&gt;true&lt;/code&gt; jeigu sis sarasas buvo pakeistas del sios
+     * klases metodo iskvietimo
+     * @throws NullPointerException if the specified collection is null
+     * @see #add(Object)
+     */
+    @Override
+    public boolean addAll(List&lt;? extends E&gt; c) {
+
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (c == null) {</span>
+<span class="nc" id="L138">            throw new NullPointerException();</span>
+        }
+<span class="fc" id="L140">        boolean changed = false;</span>
+<span class="fc" id="L141">        Iterator&lt;? extends E&gt; it = c.iterator();</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc" id="L143">            add(it.next());</span>
+<span class="fc" id="L144">            changed = true;</span>
+        }
+<span class="fc" id="L146">        return changed;</span>
+
+    }
+
+    /**
+     * *
+     * prideda visus elementus is nurodytos kolekcijos i dabartini sarasa
+     * pridejimo eiliskumas yra nustatytas pagal paduotos kolekcijos savo turima
+     * iteratoriu. Pridejimo vieta yra pagal paduota indeksa.
+     *
+     * @param index collection su elementais kurie bus prideti i si sarasa
+     * @param c collection su elementais kurie bus prideti i si sarasa
+     * @return &lt;code&gt;true&lt;/code&gt; jeigu sis sarasas buvo pakeistas del sios
+     * klases metodo iskvietimo
+     * @throws NullPointerException if the specified collection is null
+     * @see #add(Object)
+     */
+    public boolean addAll(int index, List&lt;? extends E&gt; c) {
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (c == null) {</span>
+<span class="nc" id="L165">            throw new NullPointerException();</span>
+        }
+
+<span class="fc" id="L168">        int i = 0;</span>
+
+<span class="fc" id="L170">        boolean changed = false;</span>
+<span class="fc" id="L171">        Iterator&lt;? extends E&gt; it = c.iterator();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc" id="L173">            add(index + i, it.next());</span>
+<span class="fc" id="L174">            i++;</span>
+<span class="fc" id="L175">            changed = true;</span>
+        }
+<span class="fc" id="L177">        return changed;</span>
+
+    }
+
+    /**
+     * Pasalina visus elementus is dabartinio saraso.
+     */
+    @Override
+    public void clear() {
+
+<span class="fc" id="L187">        Node node = firstNode.next;</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">        while (node != null) {</span>
+<span class="nc" id="L189">            Node next = node.next;</span>
+<span class="nc" id="L190">            node.next = null;</span>
+<span class="nc" id="L191">            node.previous = null;</span>
+<span class="nc" id="L192">            node.elements = null;</span>
+<span class="nc" id="L193">            node = next;</span>
+<span class="nc" id="L194">        }</span>
+<span class="fc" id="L195">        lastNode = firstNode;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        for (int ptr = 0; ptr &lt; firstNode.numElements; ptr++) {</span>
+<span class="fc" id="L197">            firstNode.elements[ptr] = null;</span>
+        }
+<span class="fc" id="L199">        firstNode.numElements = 0;</span>
+<span class="fc" id="L200">        firstNode.next = null;</span>
+<span class="fc" id="L201">        size = 0;</span>
+
+<span class="fc" id="L203">    }</span>
+
+    /**
+     * grazina elementa kuris yra specifikuotame indekse
+     *
+     * @param index indeksas elemento kuris bus grazinamas
+     * @return grazina elementa kuris yra specifikuotame indekse
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
+    @Override
+    public E get(int index) {
+
+<span class="pc bpc" id="L215" title="2 of 4 branches missed.">        if (index &lt; 0 || index &gt;= size) {</span>
+<span class="nc" id="L216">            throw new IndexOutOfBoundsException();</span>
+        }
+        Node node;
+<span class="fc" id="L219">        int p = 0;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (size - index &gt; index) {</span>
+<span class="fc" id="L221">            node = firstNode;</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">            while (p &lt;= index - node.numElements) {</span>
+<span class="nc" id="L223">                p += node.numElements;</span>
+<span class="nc" id="L224">                node = node.next;</span>
+            }
+        } else {
+<span class="fc" id="L227">            node = lastNode;</span>
+<span class="fc" id="L228">            p = size;</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">            while ((p -= node.numElements) &gt; index) {</span>
+<span class="nc" id="L230">                node = node.previous;</span>
+            }
+        }
+<span class="fc" id="L233">        return (E) node.elements[index - p];</span>
+
+    }
+
+    /**
+     * grazina saraso hashCode
+     * @return
+     */
+    @Override
+    public int hashCode() {
+
+<span class="fc" id="L244">        int hashCode = 1;</span>
+
+<span class="fc bfc" id="L246" title="All 2 branches covered.">        for (Node node = firstNode; node != null; node = node.next) {</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">            for (int i = 0; i &lt; node.numElements; i++) {</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">                hashCode = 31 * hashCode + (node.elements[i] == null ? 0 : node.elements[i].hashCode());</span>
+            }
+        }
+<span class="fc" id="L251">        return hashCode;</span>
+
+    }
+
+    /**
+     * grazina indeksa pirmos pasitaikusios pozicijos kurioje rastas
+     * specifikuoto elemento siame sarasa, arba -1 jeigu sis sarasas 
+     * neturi nurodyto elemento. Formaliau grazina zemiausia indeksa 
+     * &lt;code&gt;i&lt;/code&gt; kuris grazina true siuo kodu
+     * &lt;code&gt;(o==null&amp;nbsp;?&amp;nbsp;get(i)==null&amp;nbsp;:&amp;nbsp;o.equals(get(i)))&lt;/code&gt;,
+     * or -1 if there is no such index.
+     *
+     * @param o elementas kuris bus jieskomas
+     * @return zemiausia indeksa nurodyto elemento siame sarase arba -1 jeigu
+     * toks elementas nera surastas
+     */
+    @Override
+    public int indexOf(Object o) {
+
+<span class="fc" id="L270">        int index = 0;</span>
+<span class="fc" id="L271">        Node node = firstNode;</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">            while (node != null) {</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">                for (int ptr = 0; ptr &lt; node.numElements; ptr++) {</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">                    if (node.elements[ptr] == null) {</span>
+<span class="nc" id="L276">                        return index + ptr;</span>
+                    }
+                }
+<span class="fc" id="L279">                index += node.numElements;</span>
+<span class="fc" id="L280">                node = node.next;</span>
+            }
+        } else {
+<span class="fc bfc" id="L283" title="All 2 branches covered.">            while (node != null) {</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">                for (int ptr = 0; ptr &lt; node.numElements; ptr++) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">                    if ((node.elements[ptr]).equals(o)) {</span>
+<span class="fc" id="L286">                        return index + ptr;</span>
+                    }
+                }
+<span class="fc" id="L289">                index += node.numElements;</span>
+<span class="fc" id="L290">                node = node.next;</span>
+            }
+        }
+<span class="fc" id="L293">        return -1;</span>
+
+    }
+
+    /**
+     * grazina indeksa paskutinios pasitaikusios pozicijos kurioje rastas
+     * specifikuoto elemento siame sarasa, arba -1 jeigu sis sarasas 
+     * neturi nurodyto elemento. Formaliau grazina auksciausia indeksa 
+     * &lt;code&gt;i&lt;/code&gt; kuris grazina true siuo kodu
+     * &lt;code&gt;(o==null&amp;nbsp;?&amp;nbsp;get(i)==null&amp;nbsp;:&amp;nbsp;o.equals(get(i)))&lt;/code&gt;,
+     * or -1 if there is no such index.
+     *
+     * @param o elementas kuris bus jieskomas
+     * @return zemiausia indeksa nurodyto elemento siame sarase arba -1 jeigu
+     * toks elementas nera surastas
+     */
+    @Override
+    public int lastIndexOf(Object o) {
+
+<span class="fc" id="L312">        int index = size;</span>
+<span class="fc" id="L313">        Node node = lastNode;</span>
+<span class="pc bpc" id="L314" title="1 of 2 branches missed.">        if (o == null) {</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">            while (node != null) {</span>
+<span class="nc" id="L316">                index -= node.numElements;</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">                for (int i = node.numElements - 1; i &gt;= 0; i--) {</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">                    if (node.elements[i] == null) {</span>
+<span class="nc" id="L319">                        return (index + i);</span>
+                    }
+                }
+<span class="nc" id="L322">                node = node.previous;</span>
+            }
+        } else {
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">            while (node != null) {</span>
+<span class="fc" id="L326">                index -= node.numElements;</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">                for (int i = node.numElements - 1; i &gt;= 0; i--) {</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">                    if ((node.elements[i]).equals(o)) {</span>
+<span class="fc" id="L329">                        return (index + i);</span>
+                    }
+                }
+<span class="nc" id="L332">                node = node.previous;</span>
+            }
+        }
+<span class="nc" id="L335">        return -1;</span>
+
+    }
+
+    /**
+     * grazina iterariu per sios sarasa elementus taisiklingame eiliskume
+     *
+     * @return grazina iterariu per sios sarasa elementus 
+     * taisiklingame eiliskume
+     */
+    @Override
+    public Iterator&lt;E&gt; iterator() {
+
+<span class="fc" id="L348">        return new ULLIterator(firstNode, -1, -1);</span>
+
+    }
+
+    /**
+     * grazina list tipo iterariu per sios sarasa elementus
+     * taisiklingame eiliskume
+     *
+     * @return grazina list tipo iterariu per sios sarasa
+     * elementus taisiklingame eiliskume
+     */
+    @Override
+    public ListIterator&lt;E&gt; listIterator() {
+
+<span class="nc" id="L362">        return new ULLIterator(firstNode, -1, -1);</span>
+
+    }
+
+    /**
+     * 
+     * grazina list tipo iteratoriu per sios saraso elementus
+     * ( taisiklingame elementu eiliskume ), pradetant nuo
+     * nurodyto indekso siame sarase.  
+     *
+     * @param index indeksas pirmo elemento kuris bus graziniamas suo
+     * list tipo iteratoriumi ( naudojant metoda &lt;code&gt;next&lt;/code&gt;)
+     * @return grazina list tipo iterariu per sios sarasa
+     * elementus taisiklingame eiliskume
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
+    @Override
+    public ListIterator&lt;E&gt; listIterator(int index) {
+
+<span class="pc bpc" id="L381" title="2 of 4 branches missed.">        if (index &lt; 0 || index &gt; size) {</span>
+<span class="nc" id="L382">            throw new IndexOutOfBoundsException();</span>
+        }
+        Node node;
+<span class="fc" id="L385">        int p = 0;</span>
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">        if (size - index &gt; index) {</span>
+<span class="fc" id="L387">            node = firstNode;</span>
+<span class="pc bpc" id="L388" title="1 of 2 branches missed.">            while (p &lt;= index - node.numElements) {</span>
+<span class="nc" id="L389">                p += node.numElements;</span>
+<span class="nc" id="L390">                node = node.next;</span>
+            }
+        } else {
+<span class="nc" id="L393">            node = lastNode;</span>
+<span class="nc" id="L394">            p = size;</span>
+<span class="nc bnc" id="L395" title="All 2 branches missed.">            while ((p -= node.numElements) &gt; index) {</span>
+<span class="nc" id="L396">                node = node.previous;</span>
+            }
+        }
+<span class="fc" id="L399">        return new ULLIterator(node, index - p - 1, index - 1);</span>
+
+    }
+
+    /**
+     * 
+     * pasalina elementas is specifikuotos posicijos (indekso ) siame sarasa
+     * Pastumia visus toliau einancius elementus i kaire per viena ( indeksa
+     * sumazina 1 ) grazina true jei elementas buvo pasalintas is saraso
+     *
+     * @param index indeksas elemento kuris bus pasalinamas
+     * @return grazina elementa kuris buvo nurodytame indekse
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
+    @Override
+    public E remove(int index) {
+
+<span class="pc bpc" id="L416" title="2 of 4 branches missed.">        if (index &lt; 0 || index &gt;= size) {</span>
+<span class="nc" id="L417">            throw new IndexOutOfBoundsException();</span>
+        }
+<span class="fc" id="L419">        E element = null;</span>
+        Node node;
+<span class="fc" id="L421">        int p = 0;</span>
+<span class="pc bpc" id="L422" title="1 of 2 branches missed.">        if (size - index &gt; index) {</span>
+<span class="fc" id="L423">            node = firstNode;</span>
+<span class="pc bpc" id="L424" title="1 of 2 branches missed.">            while (p &lt;= index - node.numElements) {</span>
+<span class="nc" id="L425">                p += node.numElements;</span>
+<span class="nc" id="L426">                node = node.next;</span>
+            }
+        } else {
+<span class="nc" id="L429">            node = lastNode;</span>
+<span class="nc" id="L430">            p = size;</span>
+<span class="nc bnc" id="L431" title="All 2 branches missed.">            while ((p -= node.numElements) &gt; index) {</span>
+<span class="nc" id="L432">                node = node.previous;</span>
+            }
+        }
+<span class="fc" id="L435">        element = (E) node.elements[index - p];</span>
+<span class="fc" id="L436">        removeFromNode(node, index - p);</span>
+<span class="fc" id="L437">        return element;</span>
+
+    }
+
+    /**
+     * 
+     * Pasalina pirmaji pasitaikusi pasirodyma nurodyto elemento is dabartinio
+     * saraso , jeigu toks elementas yra sarase, jeigu elementas neegzistuoja
+     * siame sarase tada sarasas yra nepakeiciamas. Formaliai , pasalinamas 
+     * elementas su paciu maziausiausiu indeksu &lt;code&gt;i&lt;/code&gt; kai galioja salyga
+     * &lt;code&gt;(o==null&amp;nbsp;?&amp;nbsp;get(i)==null&amp;nbsp;:&amp;nbsp;o.equals(get(i)))&lt;/code&gt;
+     * (jeigu toks elementas egzistuoja). grazina &lt;code&gt;true&lt;/code&gt; jeigu sis
+     * sarasas turejo specifikuota elementa ( kitaip tariant , sarasas
+     * buvo pakeistas del metodo iskvietimo
+     *
+     * @param o elementas kuris bus istriniamas jeigu bus rastas
+     * @return &lt;code&gt;true&lt;/code&gt; jeigu sis sarasas turejo nurodyta elementas
+     */
+    @Override
+    public boolean remove(Object o) {
+
+<span class="fc" id="L458">        int index = 0;</span>
+<span class="fc" id="L459">        Node node = firstNode;</span>
+<span class="pc bpc" id="L460" title="1 of 2 branches missed.">        if (o == null) {</span>
+<span class="nc bnc" id="L461" title="All 2 branches missed.">            while (node != null) {</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">                for (int ptr = 0; ptr &lt; node.numElements; ptr++) {</span>
+<span class="nc bnc" id="L463" title="All 2 branches missed.">                    if (node.elements[ptr] == null) {</span>
+<span class="nc" id="L464">                        removeFromNode(node, ptr);</span>
+<span class="nc" id="L465">                        return true;</span>
+                    }
+                }
+<span class="nc" id="L468">                index += node.numElements;</span>
+<span class="nc" id="L469">                node = node.next;</span>
+            }
+        } else {
+<span class="fc bfc" id="L472" title="All 2 branches covered.">            while (node != null) {</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">                for (int ptr = 0; ptr &lt; node.numElements; ptr++) {</span>
+<span class="fc bfc" id="L474" title="All 2 branches covered.">                    if ((node.elements[ptr]).equals(o)) {</span>
+<span class="fc" id="L475">                        removeFromNode(node, ptr);</span>
+<span class="fc" id="L476">                        return true;</span>
+                    }
+                }
+<span class="fc" id="L479">                index += node.numElements;</span>
+<span class="fc" id="L480">                node = node.next;</span>
+            }
+        }
+<span class="fc" id="L483">        return false;</span>
+    }
+
+    /**
+     * 
+     * pasalina visus elementus is sios saraso kurie yra nurodytame sarase
+     *
+     * @param c kolekcija turinti elementu sarasa kuris bus istriniamas
+     * @return &lt;code&gt;true&lt;/code&gt; jeigu sis sarasas buvo pakeistas del 
+     * metodo iskvietimo
+     * @throws NullPointerException if the specified collection is null
+     * @see #remove(Object)
+     * @see #contains(Object)
+     */
+    @Override
+    public boolean removeAll(List&lt;?&gt; c) {
+
+<span class="pc bpc" id="L500" title="1 of 2 branches missed.">        if (c == null) {</span>
+<span class="nc" id="L501">            throw new NullPointerException();</span>
+        }
+<span class="fc" id="L503">        Iterator&lt;?&gt; it = c.iterator();</span>
+<span class="fc" id="L504">        boolean changed = false;</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">            if (remove(it.next())) {</span>
+<span class="fc" id="L507">                changed = true;</span>
+            }
+        }
+<span class="fc" id="L510">        return changed;</span>
+
+    }
+
+    /**
+     * 
+     * pasalina visus elementus is sios saraso kurie nera nurodytame sarase
+     *
+     * @param c kolekcija turinti elementu sarasa kurie nebus istriniami
+     * @return &lt;code&gt;true&lt;/code&gt; jeigu sis sarasas buvo pakeistas del 
+     * metodo iskvietimo
+     * @throws NullPointerException if the specified collection is null
+     * @see #remove(Object)
+     * @see #contains(Object)
+     */
+    @Override
+    public boolean retainAll(List&lt;?&gt; c) {
+
+<span class="pc bpc" id="L528" title="1 of 2 branches missed.">        if (c == null) {</span>
+<span class="nc" id="L529">            throw new NullPointerException();</span>
+        }
+<span class="fc" id="L531">        boolean changed = false;</span>
+<span class="fc bfc" id="L532" title="All 2 branches covered.">        for (Node node = firstNode; node != null; node = node.next) {</span>
+<span class="fc bfc" id="L533" title="All 2 branches covered.">            for (int i = 0; i &lt; node.numElements; i++) {</span>
+<span class="fc bfc" id="L534" title="All 2 branches covered.">                if (!c.contains(node.elements[i])) {</span>
+<span class="fc" id="L535">                    removeFromNode(node, i);</span>
+<span class="fc" id="L536">                    i--;</span>
+<span class="fc" id="L537">                    changed = true;</span>
+                }
+            }
+        }
+<span class="fc" id="L541">        return changed;</span>
+
+    }
+
+    /**
+     * 
+     * Nurodyto indekso elemento reiskme pakeicia nurodyta reiksme
+     *
+     * @param index indeksas elemento kuris bus pakeistas
+     * @param element elementas kuris bus patalpintas i nurodyta indeksa
+     * @return elementas kuris priestai buvo nurodytame indekse
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
+    @Override
+    public E set(int index, E element) {
+
+<span class="pc bpc" id="L557" title="2 of 4 branches missed.">        if (index &lt; 0 || index &gt;= size) {</span>
+<span class="nc" id="L558">            throw new IndexOutOfBoundsException();</span>
+        }
+<span class="fc" id="L560">        E el = null;</span>
+        Node node;
+<span class="fc" id="L562">        int p = 0;</span>
+<span class="pc bpc" id="L563" title="1 of 2 branches missed.">        if (size - index &gt; index) {</span>
+<span class="fc" id="L564">            node = firstNode;</span>
+<span class="pc bpc" id="L565" title="1 of 2 branches missed.">            while (p &lt;= index - node.numElements) {</span>
+<span class="nc" id="L566">                p += node.numElements;</span>
+<span class="nc" id="L567">                node = node.next;</span>
+            }
+        } else {
+<span class="nc" id="L570">            node = lastNode;</span>
+<span class="nc" id="L571">            p = size;</span>
+<span class="nc bnc" id="L572" title="All 2 branches missed.">            while ((p -= node.numElements) &gt; index) {</span>
+<span class="nc" id="L573">                node = node.previous;</span>
+            }
+        }
+<span class="fc" id="L576">        el = (E) node.elements[index - p];</span>
+<span class="fc" id="L577">        node.elements[index - p] = element;</span>
+<span class="fc" id="L578">        return el;</span>
+
+    }
+
+    /**
+     * grazina elementu skaiciu sarase
+     *
+     * @return elementu skaiciu sarase
+     */
+    @Override
+    public int size() {
+
+<span class="fc" id="L590">        return size;</span>
+
+    }
+
+    /***
+     * 
+     * grazina sarasasa, kuris yra reference i si sarasa, bet juo galima
+     * vaikscioti tik nuo nurodyto indekso iki nurodyto indekso
+     * 
+     * @param fromIndex naujo reference i si sarasa pradzios indekas
+     * @param toIndex naujo reference i si sarasa pabaigos indekas
+     * @return 
+     */
+    @Override
+    public List&lt;E&gt; subList(int fromIndex, int toIndex) {
+
+<span class="nc" id="L606">        return new SubSet(this, fromIndex, toIndex);</span>
+
+    }
+
+    /**
+     * 
+     * Grazina masyva turinti visus sio saraso elementus taisiklingame
+     * eiliskume nuo pradzios indekso iki pabaigos indekso.
+     *
+     * &lt;p&gt;
+     * The returned array will be &quot;safe&quot; in that no references to it are
+     * maintained by this list. (In other words, this method must allocate a new
+     * array). The caller is thus free to modify the returned array.
+     *
+     * &lt;p&gt;
+     * This method acts as bridge between array-based and collection-based APIs.
+     *
+     * @return an array containing all of the elements in this list in proper
+     * sequence
+     */
+    @Override
+    public Object[] toArray() {
+
+<span class="fc" id="L629">        Object[] array = new Object[size];</span>
+<span class="fc" id="L630">        int p = 0;</span>
+<span class="fc bfc" id="L631" title="All 2 branches covered.">        for (Node node = firstNode; node != null; node = node.next) {</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">            for (int i = 0; i &lt; node.numElements; i++) {</span>
+<span class="fc" id="L633">                array[p] = node.elements[i];</span>
+<span class="fc" id="L634">                p++;</span>
+            }
+        }
+<span class="fc" id="L637">        return array;</span>
+    }
+
+    /**
+     * Returns an array containing all of the elements in this list in proper
+     * sequence (from first to last element).
+     *
+     * &lt;p&gt;
+     * The returned array will be &quot;safe&quot; in that no references to it are
+     * maintained by this list. (In other words, this method must allocate a new
+     * array). The caller is thus free to modify the returned array.
+     *
+     * &lt;p&gt;
+     * This method acts as bridge between array-based and collection-based APIs.
+     *
+     * @param &lt;T&gt;
+     * @return an array containing all of the elements in this list in proper
+     * sequence
+     */
+    @Override
+    public &lt;T&gt; T[] toArray(T[] a) {
+
+<span class="fc bfc" id="L659" title="All 2 branches covered.">        if (a.length &lt; size) {</span>
+<span class="fc" id="L660">            a = (T[]) java.lang.reflect.Array.newInstance(</span>
+<span class="fc" id="L661">                    a.getClass().getComponentType(), size);</span>
+        }
+<span class="fc" id="L663">        Object[] result = a;</span>
+<span class="fc" id="L664">        int p = 0;</span>
+<span class="fc bfc" id="L665" title="All 2 branches covered.">        for (Node node = firstNode; node != null; node = node.next) {</span>
+<span class="fc bfc" id="L666" title="All 2 branches covered.">            for (int i = 0; i &lt; node.numElements; i++) {</span>
+<span class="fc" id="L667">                result[p] = node.elements[i];</span>
+<span class="fc" id="L668">                p++;</span>
+            }
+        }
+<span class="fc" id="L671">        return a;</span>
+
+    }
+
+    /**
+     * Returns &lt;code&gt;true&lt;/code&gt; if this list contains the specified element.
+     * More formally, returns &lt;code&gt;true&lt;/code&gt; if and only if this list
+     * contains at least one element &lt;code&gt;e&lt;/code&gt; such that
+     * &lt;code&gt;(o==null&amp;nbsp;?&amp;nbsp;e==null&amp;nbsp;:&amp;nbsp;o.equals(e))&lt;/code&gt;.
+     *
+     * @param o element whose presence in this list is to be tested
+     * @return &lt;code&gt;true&lt;/code&gt; if this list contains the specified element
+     */
+    @Override
+    public boolean contains(Object o) {
+
+<span class="fc bfc" id="L687" title="All 2 branches covered.">        return (indexOf(o) != -1);</span>
+
+    }
+
+    /**
+     * Returns &lt;code&gt;true&lt;/code&gt; if this list contains all of the elements of
+     * the specified collection.
+     *
+     * @param c collection to be checked for containment in this list
+     * @return &lt;code&gt;true&lt;/code&gt; if this list contains all of the elements of
+     * the specified collection
+     * @throws NullPointerException if the specified collection is null
+     * @see #contains(Object)
+     */
+    @Override
+    public boolean containsAll(List&lt;? extends E&gt; c) {
+
+<span class="pc bpc" id="L704" title="1 of 2 branches missed.">        if (c == null) {</span>
+<span class="nc" id="L705">            throw new NullPointerException();</span>
+        }
+<span class="fc" id="L707">        Iterator&lt;?&gt; it = c.iterator();</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc bfc" id="L709" title="All 2 branches covered.">            if (!contains(it.next())) {</span>
+<span class="fc" id="L710">                return false;</span>
+            }
+        }
+<span class="fc" id="L713">        return true;</span>
+
+    }
+
+    /**
+     * Returns &lt;code&gt;true&lt;/code&gt; if this list contains no elements.
+     *
+     * @return &lt;code&gt;true&lt;/code&gt; if this list contains no elements
+     */
+    @Override
+    public boolean isEmpty() {
+
+<span class="fc bfc" id="L725" title="All 2 branches covered.">        return (size == 0);</span>
+
+    }
+
+    protected class Node {
+
+        /**
+         * The next node.
+         */
+        Node next;
+
+        /**
+         * The previous node.
+         */
+        Node previous;
+
+        /**
+         * The number of elements stored in this node.
+         */
+<span class="fc" id="L744">        int numElements = 0;</span>
+
+        /**
+         * The array in which the elements are stored.
+         */
+        Object[] elements;
+
+        /**
+         * Constructs a new node.
+         */
+<span class="fc" id="L754">        Node() {</span>
+
+<span class="fc" id="L756">            elements = new Object[nodeCapacity];</span>
+<span class="fc" id="L757">        }</span>
+    }
+
+    /**
+     * Insert an element into the specified node. If the node is already full, a
+     * new node will be created and inserted into the list after the specified
+     * node.
+     *
+     * @param node
+     * @param pos the position at which the element should be inserted into the &lt;code&gt;node.elements&lt;code&gt; array
+     * @param element the element to be inserted
+     */
+    private void insertIntoNode(Node node, int pos, E element) {
+
+        // if the node is full
+<span class="pc bpc" id="L772" title="1 of 2 branches missed.">        if (node.numElements == nodeCapacity) {</span>
+            // create a new node
+<span class="nc" id="L774">            Node newNode = new Node();</span>
+            // move half of the elements to the new node
+<span class="nc" id="L776">            int elementsToMove = nodeCapacity / 2;</span>
+<span class="nc" id="L777">            int startIndex = nodeCapacity - elementsToMove;</span>
+            int i;
+<span class="nc bnc" id="L779" title="All 2 branches missed.">            for (i = 0; i &lt; elementsToMove; i++) {</span>
+<span class="nc" id="L780">                newNode.elements[i] = node.elements[startIndex + i];</span>
+<span class="nc" id="L781">                node.elements[startIndex + i] = null;</span>
+            }
+<span class="nc" id="L783">            node.numElements -= elementsToMove;</span>
+<span class="nc" id="L784">            newNode.numElements = elementsToMove;</span>
+            // insert the new node into the list
+<span class="nc" id="L786">            newNode.next = node.next;</span>
+<span class="nc" id="L787">            newNode.previous = node;</span>
+<span class="nc bnc" id="L788" title="All 2 branches missed.">            if (node.next != null) {</span>
+<span class="nc" id="L789">                node.next.previous = newNode;</span>
+            }
+<span class="nc" id="L791">            node.next = newNode;</span>
+
+<span class="nc bnc" id="L793" title="All 2 branches missed.">            if (node == lastNode) {</span>
+<span class="nc" id="L794">                lastNode = newNode;</span>
+            }
+
+            // check whether the element should be inserted into
+            // the original node or into the new node
+<span class="nc bnc" id="L799" title="All 2 branches missed.">            if (pos &gt; node.numElements) {</span>
+<span class="nc" id="L800">                node = newNode;</span>
+<span class="nc" id="L801">                pos -= node.numElements;</span>
+            }
+        }
+<span class="fc bfc" id="L804" title="All 2 branches covered.">        for (int i = node.numElements; i &gt; pos; i--) {</span>
+<span class="fc" id="L805">            node.elements[i] = node.elements[i - 1];</span>
+        }
+<span class="fc" id="L807">        node.elements[pos] = element;</span>
+<span class="fc" id="L808">        node.numElements++;</span>
+<span class="fc" id="L809">        size++;</span>
+<span class="fc" id="L810">        modCount++;</span>
+
+<span class="fc" id="L812">    }</span>
+
+    /**
+     * Removes an element from the specified node.
+     *
+     * @param node the node from which an element should be removed
+     * @param ptr the index of the element to be removed within the      &lt;code&gt;node.elements&lt;code&gt; array
+     */
+    private void removeFromNode(Node node, int ptr) {
+
+<span class="fc" id="L822">        node.numElements--;</span>
+<span class="fc bfc" id="L823" title="All 2 branches covered.">        for (int i = ptr; i &lt; node.numElements; i++) {</span>
+<span class="fc" id="L824">            node.elements[i] = node.elements[i + 1];</span>
+        }
+<span class="fc" id="L826">        node.elements[node.numElements] = null;</span>
+<span class="pc bpc" id="L827" title="3 of 4 branches missed.">        if (node.next != null &amp;&amp; node.next.numElements + node.numElements &lt;= nodeCapacity) {</span>
+<span class="nc" id="L828">            mergeWithNextNode(node);</span>
+<span class="pc bpc" id="L829" title="3 of 4 branches missed.">        } else if (node.previous != null &amp;&amp; node.previous.numElements + node.numElements &lt;= nodeCapacity) {</span>
+<span class="nc" id="L830">            mergeWithNextNode(node.previous);</span>
+        }
+<span class="fc" id="L832">        size--;</span>
+<span class="fc" id="L833">        modCount++;</span>
+
+<span class="fc" id="L835">    }</span>
+
+    /**
+     * This method does merge the specified node with the next node.
+     *
+     * @param node the node which should be merged with the next node
+     */
+    private void mergeWithNextNode(Node node) {
+
+<span class="nc" id="L844">        Node next = node.next;</span>
+<span class="nc bnc" id="L845" title="All 2 branches missed.">        for (int i = 0; i &lt; next.numElements; i++) {</span>
+<span class="nc" id="L846">            node.elements[node.numElements + i] = next.elements[i];</span>
+<span class="nc" id="L847">            next.elements[i] = null;</span>
+        }
+<span class="nc" id="L849">        node.numElements += next.numElements;</span>
+<span class="nc bnc" id="L850" title="All 2 branches missed.">        if (next.next != null) {</span>
+<span class="nc" id="L851">            next.next.previous = node;</span>
+        }
+<span class="nc" id="L853">        node.next = next.next;</span>
+<span class="nc bnc" id="L854" title="All 2 branches missed.">        if (next == lastNode) {</span>
+<span class="nc" id="L855">            lastNode = node;</span>
+        }
+
+<span class="nc" id="L858">    }</span>
+
+    private class ULLIterator implements ListIterator&lt;E&gt; {
+
+        Node currentNode;
+        int pos;
+        int index;
+
+<span class="fc" id="L866">        private int expectedModCount = modCount;</span>
+
+<span class="fc" id="L868">        ULLIterator(Node node, int ptr, int index) {</span>
+
+<span class="fc" id="L870">            this.currentNode = node;</span>
+<span class="fc" id="L871">            this.pos = ptr;</span>
+<span class="fc" id="L872">            this.index = index;</span>
+
+<span class="fc" id="L874">        }</span>
+
+        @Override
+        public boolean hasNext() {
+
+<span class="fc bfc" id="L879" title="All 2 branches covered.">            return (index &lt; size - 1);</span>
+
+        }
+
+        @Override
+        public E next() {
+
+<span class="fc" id="L886">            pos++;</span>
+<span class="pc bpc" id="L887" title="1 of 2 branches missed.">            if (pos &gt;= currentNode.numElements) {</span>
+<span class="nc bnc" id="L888" title="All 2 branches missed.">                if (currentNode.next != null) {</span>
+<span class="nc" id="L889">                    currentNode = currentNode.next;</span>
+<span class="nc" id="L890">                    pos = 0;</span>
+                } else {
+<span class="nc" id="L892">                    throw new NoSuchElementException();</span>
+                }
+            }
+<span class="fc" id="L895">            index++;</span>
+<span class="fc" id="L896">            checkForModification();</span>
+<span class="fc" id="L897">            return (E) currentNode.elements[pos];</span>
+
+        }
+
+        @Override
+        public boolean hasPrevious() {
+
+<span class="nc bnc" id="L904" title="All 2 branches missed.">            return (index &gt; 0);</span>
+
+        }
+
+        @Override
+        public E previous() {
+
+<span class="nc" id="L911">            pos--;</span>
+<span class="nc bnc" id="L912" title="All 2 branches missed.">            if (pos &lt; 0) {</span>
+<span class="nc bnc" id="L913" title="All 2 branches missed.">                if (currentNode.previous != null) {</span>
+<span class="nc" id="L914">                    currentNode = currentNode.previous;</span>
+<span class="nc" id="L915">                    pos = currentNode.numElements - 1;</span>
+                } else {
+<span class="nc" id="L917">                    throw new NoSuchElementException();</span>
+                }
+            }
+<span class="nc" id="L920">            index--;</span>
+<span class="nc" id="L921">            checkForModification();</span>
+<span class="nc" id="L922">            return (E) currentNode.elements[pos];</span>
+
+        }
+
+        @Override
+        public int nextIndex() {
+
+<span class="nc" id="L929">            return (index + 1);</span>
+
+        }
+
+        @Override
+        public int previousIndex() {
+
+<span class="nc" id="L936">            return (index - 1);</span>
+
+        }
+
+        @Override
+        public void remove() {
+
+<span class="nc" id="L943">            checkForModification();</span>
+<span class="nc" id="L944">            removeFromNode(currentNode, pos);</span>
+
+<span class="nc" id="L946">        }</span>
+
+        @Override
+        public void set(E e) {
+
+<span class="nc" id="L951">            checkForModification();</span>
+<span class="nc" id="L952">            currentNode.elements[pos] = e;</span>
+
+<span class="nc" id="L954">        }</span>
+
+        @Override
+        public void add(E e) {
+
+<span class="nc" id="L959">            checkForModification();</span>
+<span class="nc" id="L960">            insertIntoNode(currentNode, pos + 1, e);</span>
+
+<span class="nc" id="L962">        }</span>
+
+        private void checkForModification() {
+
+<span class="pc bpc" id="L966" title="1 of 2 branches missed.">            if (modCount != expectedModCount) {</span>
+<span class="nc" id="L967">                throw new ConcurrentModificationException();</span>
+            }
+
+<span class="fc" id="L970">        }</span>
+
+    }
+
+    public class SubSet&lt;E&gt; extends UnrolledLinkedList&lt;E&gt; {
+
+<span class="nc" id="L976">        UnrolledLinkedList&lt;E&gt; parentList = null;</span>
+<span class="nc" id="L977">        int startPosition = 0;</span>
+<span class="nc" id="L978">        int endPosition = 0;</span>
+
+<span class="nc" id="L980">        public SubSet(UnrolledLinkedList&lt;E&gt; parentList, int startPosition, int endPosition) {</span>
+<span class="nc" id="L981">            this.parentList = parentList;</span>
+<span class="nc" id="L982">            this.startPosition = startPosition;</span>
+<span class="nc" id="L983">            this.endPosition = endPosition;</span>
+<span class="nc" id="L984">        }</span>
+
+        @Override
+        public int size() {
+<span class="nc" id="L988">            return endPosition - startPosition;</span>
+        }
+
+        @Override
+        public boolean add(E e) {
+
+<span class="nc" id="L994">            parentList.add(endPosition, e);</span>
+<span class="nc" id="L995">            return true;</span>
+        }
+
+        @Override
+        public void add(int index, E element) {
+<span class="nc" id="L1000">            parentList.add(index + startPosition, element);</span>
+<span class="nc" id="L1001">        }</span>
+
+        @Override
+        public boolean addAll(List&lt;? extends E&gt; c) {
+<span class="nc bnc" id="L1005" title="All 2 branches missed.">            if (c == null) {</span>
+<span class="nc" id="L1006">                throw new NullPointerException();</span>
+            }
+<span class="nc" id="L1008">            boolean changed = false;</span>
+<span class="nc" id="L1009">            Iterator&lt;? extends E&gt; it = c.iterator();</span>
+<span class="nc" id="L1010">            int i = 0;</span>
+<span class="nc bnc" id="L1011" title="All 2 branches missed.">            while (it.hasNext()) {</span>
+<span class="nc bnc" id="L1012" title="All 4 branches missed.">                if (i &gt;= startPosition &amp;&amp; i &lt;= endPosition) {</span>
+<span class="nc" id="L1013">                    add(it.next());</span>
+<span class="nc" id="L1014">                    changed = true;</span>
+                }
+<span class="nc" id="L1016">                i++;</span>
+            }
+<span class="nc" id="L1018">            return changed;</span>
+        }
+
+        @Override
+        public boolean addAll(int index, List&lt;? extends E&gt; c) {
+<span class="nc bnc" id="L1023" title="All 2 branches missed.">            if (c == null) {</span>
+<span class="nc" id="L1024">                throw new NullPointerException();</span>
+            }
+<span class="nc" id="L1026">            boolean changed = false;</span>
+<span class="nc" id="L1027">            Iterator&lt;? extends E&gt; it = c.iterator();</span>
+<span class="nc" id="L1028">            int k = 0;</span>
+<span class="nc" id="L1029">            int i = 0;</span>
+<span class="nc bnc" id="L1030" title="All 2 branches missed.">            while (it.hasNext()) {</span>
+<span class="nc bnc" id="L1031" title="All 4 branches missed.">                if (k &gt;= startPosition &amp;&amp; k &lt;= endPosition) {</span>
+<span class="nc" id="L1032">                    add(it.next());</span>
+<span class="nc" id="L1033">                    changed = true;</span>
+                }
+<span class="nc" id="L1035">                k++;</span>
+            }
+<span class="nc" id="L1037">            return changed;</span>
+        }
+
+        @Override
+        public void clear() {
+<span class="nc" id="L1042">            int k = 0;</span>
+<span class="nc bnc" id="L1043" title="All 2 branches missed.">            for (Node node = parentList.firstNode; node != null; node = node.next) {</span>
+<span class="nc bnc" id="L1044" title="All 2 branches missed.">                for (int i = 0; i &lt; node.numElements; i++) {</span>
+<span class="nc bnc" id="L1045" title="All 4 branches missed.">                    if (k &gt;= startPosition &amp;&amp; k &lt;= endPosition) {</span>
+<span class="nc" id="L1046">                        parentList.remove(node.elements[i]);</span>
+                    }
+<span class="nc" id="L1048">                    k++;</span>
+                }
+            }
+<span class="nc" id="L1051">        }</span>
+
+        @Override
+        public E get(int index) {
+
+<span class="nc" id="L1056">            return super.get(startPosition + index);</span>
+
+        }
+
+        @Override
+        public int hashCode() {
+
+<span class="nc" id="L1063">            int hashCode = 1;</span>
+
+<span class="nc" id="L1065">            int k = 0;</span>
+<span class="nc bnc" id="L1066" title="All 2 branches missed.">            for (Node node = parentList.firstNode; node != null; node = node.next) {</span>
+<span class="nc bnc" id="L1067" title="All 2 branches missed.">                for (int i = 0; i &lt; node.numElements; i++) {</span>
+<span class="nc bnc" id="L1068" title="All 4 branches missed.">                    if (k &gt;= startPosition &amp;&amp; k &lt;= endPosition) {</span>
+<span class="nc bnc" id="L1069" title="All 2 branches missed.">                        hashCode = 31 * hashCode + (node.elements[i] == null ? 0 : node.elements[i].hashCode());</span>
+                    }
+<span class="nc" id="L1071">                    k++;</span>
+                }
+            }
+<span class="nc" id="L1074">            return hashCode;</span>
+
+        }
+
+        @Override
+        public int indexOf(Object o) {
+
+<span class="nc" id="L1081">            int index = 0;</span>
+<span class="nc" id="L1082">            Node node = parentList.firstNode;</span>
+<span class="nc bnc" id="L1083" title="All 2 branches missed.">            if (o == null) {</span>
+<span class="nc bnc" id="L1084" title="All 2 branches missed.">                while (node != null) {</span>
+<span class="nc bnc" id="L1085" title="All 2 branches missed.">                    for (int ptr = 0; ptr &lt; node.numElements; ptr++) {</span>
+<span class="nc bnc" id="L1086" title="All 6 branches missed.">                        if (node.elements[ptr] == null &amp;&amp; (index + ptr) &gt;= startPosition &amp;&amp; (index + ptr) &lt;= endPosition) {</span>
+<span class="nc" id="L1087">                            return index + ptr;</span>
+                        }
+                    }
+<span class="nc" id="L1090">                    index += node.numElements;</span>
+<span class="nc" id="L1091">                    node = node.next;</span>
+                }
+            } else {
+<span class="nc bnc" id="L1094" title="All 2 branches missed.">                while (node != null) {</span>
+<span class="nc bnc" id="L1095" title="All 2 branches missed.">                    for (int ptr = 0; ptr &lt; node.numElements; ptr++) {</span>
+<span class="nc bnc" id="L1096" title="All 6 branches missed.">                        if ((node.elements[ptr].equals(o)) &amp;&amp; (index + ptr) &gt;= startPosition &amp;&amp; (index + ptr) &lt;= endPosition) {</span>
+<span class="nc" id="L1097">                            return index + ptr;</span>
+                        }
+                    }
+<span class="nc" id="L1100">                    index += node.numElements;</span>
+<span class="nc" id="L1101">                    node = node.next;</span>
+                }
+            }
+<span class="nc" id="L1104">            return -1;</span>
+
+        }
+
+        @Override
+        public int lastIndexOf(Object o) {
+
+<span class="nc" id="L1111">            int index = size;</span>
+<span class="nc" id="L1112">            Node node = parentList.lastNode;</span>
+<span class="nc bnc" id="L1113" title="All 2 branches missed.">            if (o == null) {</span>
+<span class="nc bnc" id="L1114" title="All 2 branches missed.">                while (node != null) {</span>
+<span class="nc" id="L1115">                    index -= node.numElements;</span>
+<span class="nc bnc" id="L1116" title="All 2 branches missed.">                    for (int i = node.numElements - 1; i &gt;= 0; i--) {</span>
+<span class="nc bnc" id="L1117" title="All 6 branches missed.">                        if (node.elements[i] == null &amp;&amp; (index + i) &gt;= startPosition &amp;&amp; (index + i) &lt;= endPosition) {</span>
+<span class="nc" id="L1118">                            return (index + i);</span>
+                        }
+                    }
+<span class="nc" id="L1121">                    node = node.previous;</span>
+                }
+            } else {
+<span class="nc bnc" id="L1124" title="All 2 branches missed.">                while (node != null) {</span>
+<span class="nc" id="L1125">                    index -= node.numElements;</span>
+<span class="nc bnc" id="L1126" title="All 2 branches missed.">                    for (int i = node.numElements - 1; i &gt;= 0; i--) {</span>
+<span class="nc bnc" id="L1127" title="All 6 branches missed.">                        if ((node.elements[i].equals(o)) &amp;&amp; (index + i) &gt;= startPosition &amp;&amp; (index + i) &lt;= endPosition) {</span>
+<span class="nc" id="L1128">                            return (index + i);</span>
+                        }
+                    }
+<span class="nc" id="L1131">                    node = node.previous;</span>
+                }
+            }
+<span class="nc" id="L1134">            return -1;</span>
+
+        }
+
+        @Override
+        public Iterator&lt;E&gt; iterator() {
+
+<span class="nc" id="L1141">            return listIterator(0);</span>
+
+        }
+
+        @Override
+        public ListIterator&lt;E&gt; listIterator() {
+
+<span class="nc" id="L1148">            return listIterator(0);</span>
+
+        }
+
+        @Override
+        public ListIterator&lt;E&gt; listIterator(int index) {
+
+<span class="nc" id="L1155">            index = index + startPosition;</span>
+
+<span class="nc bnc" id="L1157" title="All 4 branches missed.">            if (index &lt; 0 || index &gt; size) {</span>
+<span class="nc" id="L1158">                throw new IndexOutOfBoundsException();</span>
+            }
+            Node node;
+<span class="nc" id="L1161">            int p = 0;</span>
+<span class="nc bnc" id="L1162" title="All 2 branches missed.">            if (size - index &gt; index) {</span>
+<span class="nc" id="L1163">                node = parentList.firstNode;</span>
+<span class="nc bnc" id="L1164" title="All 2 branches missed.">                while (p &lt;= index - node.numElements) {</span>
+<span class="nc" id="L1165">                    p += node.numElements;</span>
+<span class="nc" id="L1166">                    node = node.next;</span>
+                }
+            } else {
+<span class="nc" id="L1169">                node = parentList.lastNode;</span>
+<span class="nc" id="L1170">                p = size;</span>
+<span class="nc bnc" id="L1171" title="All 2 branches missed.">                while ((p -= node.numElements) &gt; index) {</span>
+<span class="nc" id="L1172">                    node = node.previous;</span>
+                }
+            }
+<span class="nc" id="L1175">            return new ULLIterator(node, index - p, index);</span>
+
+        }
+
+        @Override
+        public E remove(int index) {
+
+<span class="nc" id="L1182">            index = index + startPosition;</span>
+<span class="nc bnc" id="L1183" title="All 4 branches missed.">            if (index &lt; 0 || index &gt;= size) {</span>
+<span class="nc" id="L1184">                throw new IndexOutOfBoundsException();</span>
+            }
+<span class="nc" id="L1186">            E element = null;</span>
+            Node node;
+<span class="nc" id="L1188">            int p = 0;</span>
+<span class="nc bnc" id="L1189" title="All 2 branches missed.">            if (size - index &gt; index) {</span>
+<span class="nc" id="L1190">                node = parentList.firstNode;</span>
+<span class="nc bnc" id="L1191" title="All 2 branches missed.">                while (p &lt;= index - node.numElements) {</span>
+<span class="nc" id="L1192">                    p += node.numElements;</span>
+<span class="nc" id="L1193">                    node = node.next;</span>
+                }
+            } else {
+<span class="nc" id="L1196">                node = parentList.lastNode;</span>
+<span class="nc" id="L1197">                p = size;</span>
+<span class="nc bnc" id="L1198" title="All 2 branches missed.">                while ((p -= node.numElements) &gt; index) {</span>
+<span class="nc" id="L1199">                    node = node.previous;</span>
+                }
+            }
+<span class="nc" id="L1202">            element = (E) node.elements[index - p];</span>
+<span class="nc" id="L1203">            parentList.removeFromNode(node, index - p);</span>
+<span class="nc" id="L1204">            return element;</span>
+
+        }
+
+        @Override
+        public boolean remove(Object o) {
+
+<span class="nc" id="L1211">            int index = startPosition;</span>
+<span class="nc" id="L1212">            Node node = parentList.firstNode;</span>
+<span class="nc bnc" id="L1213" title="All 2 branches missed.">            if (o == null) {</span>
+<span class="nc bnc" id="L1214" title="All 2 branches missed.">                while (node != null) {</span>
+<span class="nc bnc" id="L1215" title="All 2 branches missed.">                    for (int ptr = 0; ptr &lt; node.numElements; ptr++) {</span>
+<span class="nc bnc" id="L1216" title="All 4 branches missed.">                        if (node.elements[ptr] == null &amp;&amp; index &lt;= endPosition) {</span>
+<span class="nc" id="L1217">                            parentList.removeFromNode(node, ptr);</span>
+<span class="nc" id="L1218">                            return true;</span>
+                        }
+                    }
+<span class="nc" id="L1221">                    index += node.numElements;</span>
+<span class="nc" id="L1222">                    node = node.next;</span>
+                }
+            } else {
+<span class="nc bnc" id="L1225" title="All 2 branches missed.">                while (node != null) {</span>
+<span class="nc bnc" id="L1226" title="All 2 branches missed.">                    for (int ptr = 0; ptr &lt; node.numElements; ptr++) {</span>
+<span class="nc bnc" id="L1227" title="All 4 branches missed.">                        if (o.equals(node.elements[ptr]) &amp;&amp; index &lt;= endPosition) {</span>
+<span class="nc" id="L1228">                            parentList.removeFromNode(node, ptr);</span>
+<span class="nc" id="L1229">                            return true;</span>
+                        }
+                    }
+<span class="nc" id="L1232">                    index += node.numElements;</span>
+<span class="nc" id="L1233">                    node = node.next;</span>
+                }
+            }
+<span class="nc" id="L1236">            return false;</span>
+        }
+
+        @Override
+        public boolean removeAll(List&lt;?&gt; c) {
+
+<span class="nc bnc" id="L1242" title="All 2 branches missed.">            if (c == null) {</span>
+<span class="nc" id="L1243">                throw new NullPointerException();</span>
+            }
+<span class="nc" id="L1245">            Iterator&lt;?&gt; it = c.iterator();</span>
+<span class="nc" id="L1246">            boolean changed = false;</span>
+<span class="nc bnc" id="L1247" title="All 2 branches missed.">            while (it.hasNext()) {</span>
+<span class="nc bnc" id="L1248" title="All 2 branches missed.">                if (remove(it.next())) {</span>
+<span class="nc" id="L1249">                    changed = true;</span>
+                }
+            }
+<span class="nc" id="L1252">            return changed;</span>
+
+        }
+
+        @Override
+        public boolean retainAll(List&lt;?&gt; c) {
+
+<span class="nc bnc" id="L1259" title="All 2 branches missed.">            if (c == null) {</span>
+<span class="nc" id="L1260">                throw new NullPointerException();</span>
+            }
+<span class="nc" id="L1262">            boolean changed = false;</span>
+<span class="nc" id="L1263">            int index = 0;</span>
+
+<span class="nc bnc" id="L1265" title="All 2 branches missed.">            for (Node node = parentList.firstNode; node != null; node = node.next) {</span>
+<span class="nc bnc" id="L1266" title="All 2 branches missed.">                for (int i = 0; i &lt; node.numElements; i++) {</span>
+<span class="nc bnc" id="L1267" title="All 6 branches missed.">                    if (!c.contains(node.elements[i]) &amp;&amp; index &gt;= startPosition &amp;&amp; index &lt;= endPosition) {</span>
+<span class="nc" id="L1268">                        parentList.removeFromNode(node, i);</span>
+<span class="nc" id="L1269">                        i--;</span>
+<span class="nc" id="L1270">                        changed = true;</span>
+                    }
+<span class="nc" id="L1272">                    index++;</span>
+                }
+            }
+<span class="nc" id="L1275">            return changed;</span>
+
+        }
+
+        @Override
+        public E set(int index, E element) {
+
+<span class="nc" id="L1282">            index = index + startPosition;</span>
+<span class="nc bnc" id="L1283" title="All 4 branches missed.">            if (index &lt; 0 || index &gt;= size) {</span>
+<span class="nc" id="L1284">                throw new IndexOutOfBoundsException();</span>
+            }
+<span class="nc" id="L1286">            E el = null;</span>
+            Node node;
+<span class="nc" id="L1288">            int p = 0;</span>
+<span class="nc bnc" id="L1289" title="All 2 branches missed.">            if (size - index &gt; index) {</span>
+<span class="nc" id="L1290">                node = parentList.firstNode;</span>
+<span class="nc bnc" id="L1291" title="All 2 branches missed.">                while (p &lt;= index - node.numElements) {</span>
+<span class="nc" id="L1292">                    p += node.numElements;</span>
+<span class="nc" id="L1293">                    node = node.next;</span>
+                }
+            } else {
+<span class="nc" id="L1296">                node = parentList.lastNode;</span>
+<span class="nc" id="L1297">                p = size;</span>
+<span class="nc bnc" id="L1298" title="All 2 branches missed.">                while ((p -= node.numElements) &gt; index) {</span>
+<span class="nc" id="L1299">                    node = node.previous;</span>
+                }
+            }
+<span class="nc" id="L1302">            el = (E) node.elements[index - p];</span>
+<span class="nc" id="L1303">            node.elements[index - p] = element;</span>
+<span class="nc" id="L1304">            return el;</span>
+
+        }
+
+        @Override
+        public List&lt;E&gt; subList(int fromIndex, int toIndex) {
+
+<span class="nc" id="L1311">            return new SubSet(this, fromIndex, toIndex);</span>
+
+        }
+
+        @Override
+        public Object[] toArray() {
+
+<span class="nc" id="L1318">            Object[] array = new Object[size];</span>
+<span class="nc" id="L1319">            int p = 0;</span>
+<span class="nc" id="L1320">            int index = 0;</span>
+<span class="nc bnc" id="L1321" title="All 2 branches missed.">            for (Node node = parentList.firstNode; node != null; node = node.next) {</span>
+<span class="nc bnc" id="L1322" title="All 2 branches missed.">                for (int i = 0; i &lt; node.numElements; i++) {</span>
+<span class="nc bnc" id="L1323" title="All 4 branches missed.">                    if (index &gt;= startPosition &amp;&amp; index &lt;= endPosition) {</span>
+<span class="nc" id="L1324">                        array[p] = node.elements[i];</span>
+<span class="nc" id="L1325">                        p++;</span>
+                    } else {
+<span class="nc" id="L1327">                        index++;</span>
+                    }
+                }
+            }
+<span class="nc" id="L1331">            return array;</span>
+        }
+
+        @Override
+        public &lt;T&gt; T[] toArray(T[] a) {
+
+<span class="nc bnc" id="L1337" title="All 2 branches missed.">            if (a.length &lt; size) {</span>
+<span class="nc" id="L1338">                a = (T[]) java.lang.reflect.Array.newInstance(</span>
+<span class="nc" id="L1339">                        a.getClass().getComponentType(), size);</span>
+            }
+<span class="nc" id="L1341">            Object[] result = a;</span>
+<span class="nc" id="L1342">            int p = 0;</span>
+<span class="nc" id="L1343">            int index = 0;</span>
+<span class="nc bnc" id="L1344" title="All 2 branches missed.">            for (Node node = parentList.firstNode; node != null; node = node.next) {</span>
+<span class="nc bnc" id="L1345" title="All 2 branches missed.">                for (int i = 0; i &lt; node.numElements; i++) {</span>
+<span class="nc bnc" id="L1346" title="All 4 branches missed.">                    if (index &gt;= startPosition &amp;&amp; index &lt;= endPosition) {</span>
+<span class="nc" id="L1347">                        result[p] = node.elements[i];</span>
+<span class="nc" id="L1348">                        p++;</span>
+                    } else {
+<span class="nc" id="L1350">                        index++;</span>
+                    }
+                }
+            }
+<span class="nc" id="L1354">            return a;</span>
+
+        }
+
+        @Override
+        public boolean contains(Object o) {
+
+<span class="nc bnc" id="L1361" title="All 2 branches missed.">            return (indexOf(o) != -1);</span>
+
+        }
+
+        @Override
+        public boolean containsAll(List&lt;? extends E&gt; c) {
+
+<span class="nc bnc" id="L1368" title="All 2 branches missed.">            if (c == null) {</span>
+<span class="nc" id="L1369">                throw new NullPointerException();</span>
+            }
+<span class="nc" id="L1371">            Iterator&lt;?&gt; it = c.iterator();</span>
+<span class="nc bnc" id="L1372" title="All 2 branches missed.">            while (it.hasNext()) {</span>
+<span class="nc bnc" id="L1373" title="All 2 branches missed.">                if (!contains(it.next())) {</span>
+<span class="nc" id="L1374">                    return false;</span>
+                }
+            }
+<span class="nc" id="L1377">            return true;</span>
+
+        }
+
+        public boolean isEmpty() {
+
+<span class="nc bnc" id="L1383" title="All 2 branches missed.">            return (size == 0);</span>
+
+        }
+
+        private class ULLIterator implements ListIterator&lt;E&gt; {
+
+            Node currentNode;
+            int pos;
+            int index;
+
+<span class="nc" id="L1393">            private int expectedModCount = modCount;</span>
+
+<span class="nc" id="L1395">            ULLIterator(Node node, int ptr, int index) {</span>
+
+<span class="nc" id="L1397">                this.currentNode = node;</span>
+<span class="nc" id="L1398">                this.pos = ptr;</span>
+<span class="nc" id="L1399">                this.index = index;</span>
+
+<span class="nc" id="L1401">            }</span>
+
+            @Override
+            public boolean hasNext() {
+
+<span class="nc bnc" id="L1406" title="All 2 branches missed.">                if (index &gt; endPosition) {</span>
+<span class="nc" id="L1407">                    return false;</span>
+                } else {
+<span class="nc bnc" id="L1409" title="All 2 branches missed.">                    return (index &lt; size - 1);</span>
+                }
+            }
+
+            @Override
+            public E next() {
+
+<span class="nc" id="L1416">                pos++;</span>
+<span class="nc bnc" id="L1417" title="All 2 branches missed.">                if (pos &gt;= currentNode.numElements) {</span>
+<span class="nc bnc" id="L1418" title="All 2 branches missed.">                    if (currentNode.next != null) {</span>
+<span class="nc" id="L1419">                        currentNode = currentNode.next;</span>
+<span class="nc" id="L1420">                        pos = 0;</span>
+                    } else {
+<span class="nc" id="L1422">                        throw new NoSuchElementException();</span>
+                    }
+                }
+<span class="nc" id="L1425">                index++;</span>
+<span class="nc" id="L1426">                checkForModification();</span>
+<span class="nc" id="L1427">                return (E) currentNode.elements[pos];</span>
+
+            }
+
+            @Override
+            public boolean hasPrevious() {
+
+<span class="nc bnc" id="L1434" title="All 2 branches missed.">                return (index &gt; startPosition);</span>
+
+            }
+
+            @Override
+            public E previous() {
+
+<span class="nc" id="L1441">                pos--;</span>
+<span class="nc bnc" id="L1442" title="All 2 branches missed.">                if (pos &lt; 0) {</span>
+<span class="nc bnc" id="L1443" title="All 2 branches missed.">                    if (currentNode.previous != null) {</span>
+<span class="nc" id="L1444">                        currentNode = currentNode.previous;</span>
+<span class="nc" id="L1445">                        pos = currentNode.numElements - 1;</span>
+                    } else {
+<span class="nc" id="L1447">                        throw new NoSuchElementException();</span>
+                    }
+                }
+<span class="nc" id="L1450">                index--;</span>
+<span class="nc" id="L1451">                checkForModification();</span>
+<span class="nc" id="L1452">                return (E) currentNode.elements[pos];</span>
+
+            }
+
+            @Override
+            public int nextIndex() {
+
+<span class="nc" id="L1459">                return (index + 1);</span>
+
+            }
+
+            @Override
+            public int previousIndex() {
+
+<span class="nc" id="L1466">                return (index - 1);</span>
+
+            }
+
+            @Override
+            public void remove() {
+
+<span class="nc" id="L1473">                checkForModification();</span>
+<span class="nc" id="L1474">                parentList.removeFromNode(currentNode, pos);</span>
+
+<span class="nc" id="L1476">            }</span>
+
+            @Override
+            public void set(E e) {
+
+<span class="nc" id="L1481">                checkForModification();</span>
+<span class="nc" id="L1482">                currentNode.elements[pos] = e;</span>
+
+<span class="nc" id="L1484">            }</span>
+
+            @Override
+            public void add(E e) {
+
+<span class="nc" id="L1489">                checkForModification();</span>
+<span class="nc" id="L1490">                parentList.insertIntoNode(currentNode, pos + 1, e);</span>
+
+<span class="nc" id="L1492">            }</span>
+
+            private void checkForModification() {
+
+<span class="nc bnc" id="L1496" title="All 2 branches missed.">                if (modCount != expectedModCount) {</span>
+<span class="nc" id="L1497">                    throw new ConcurrentModificationException();</span>
+                }
+<span class="nc" id="L1499">            }</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

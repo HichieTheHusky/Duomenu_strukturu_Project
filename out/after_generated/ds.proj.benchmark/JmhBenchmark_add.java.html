@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JmhBenchmark_add.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$ds_proj_in_Duomenu_strukturu_Project.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.benchmark</a> &gt; <span class="el_source">JmhBenchmark_add.java</span></div><h1>JmhBenchmark_add.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ds.proj.benchmark;
+
+import ds.proj.util.UnrolledLinkedList;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+
+@BenchmarkMode(Mode.AverageTime)
+
+@State(Scope.Benchmark)
+
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
+
+@Warmup(time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(time = 1, timeUnit = TimeUnit.SECONDS)
+/**
+ *
+ * @author husky
+ */
+<span class="nc" id="L32">public class JmhBenchmark_add {</span>
+
+    static final int OPERATION_COUNT = 1_000;
+
+    @Param({&quot;4000&quot;, &quot;8000&quot;, &quot;16000&quot;, &quot;32000&quot;})
+    public int listSize;
+
+<span class="nc" id="L39">    UnrolledLinkedList&lt;Float&gt; ULL = new UnrolledLinkedList&lt;&gt;();</span>
+<span class="nc" id="L40">    LinkedList&lt;Float&gt; linkedList = new LinkedList&lt;&gt;();</span>
+
+<span class="nc" id="L42">    float[] ULLTest = new float[32000];</span>
+<span class="nc" id="L43">    float[] listTest = new float[32000];</span>
+
+    @Benchmark
+    public void unrolledLinkedListObjectAdd(Blackhole bh) {
+<span class="nc" id="L47">        ULL = new UnrolledLinkedList&lt;&gt;();</span>
+<span class="nc" id="L48">        util.generateList(ULL, listSize, ULLTest);</span>
+
+<span class="nc" id="L50">    }</span>
+
+    @Benchmark
+    public void linkedListObjectAdd(Blackhole bh) {
+<span class="nc" id="L54">        linkedList = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L55">        util.generateList(linkedList, listSize, listTest);</span>
+
+<span class="nc" id="L57">    }</span>
+
+    // Rekomenduojamas JMH testų paleidimo būdas, leidžiantis išvengti Java IDE
+    // įtakos testo rezultatams - naudoti testo jar failą:
+    //   &gt; java -jar target/benchmarks.jar
+    // Tačiau laboratorinių darbų metu testų vykdymui patogiau naudoti JMH
+    // Runner ir tiesiog įvykdyti testo klasę.
+    public static void main(String[] args) throws RunnerException {
+<span class="nc" id="L65">        Options opt = new OptionsBuilder()</span>
+<span class="nc" id="L66">                .include(JmhBenchmark_add.class.getSimpleName())</span>
+<span class="nc" id="L67">                .forks(1)</span>
+<span class="nc" id="L68">                .build();</span>
+<span class="nc" id="L69">        new Runner(opt).run();</span>
+<span class="nc" id="L70">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

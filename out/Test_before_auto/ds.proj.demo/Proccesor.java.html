@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Proccesor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$UnrolledLinkedListTest.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.demo</a> &gt; <span class="el_source">Proccesor.java</span></div><h1>Proccesor.java</h1><pre class="source lang-java linenums">package ds.proj.demo;
+
+import ds.proj.util.Ks;
+import ds.proj.util.Parsable;
+import ds.proj.util.AditionalFunctions;
+
+import java.time.LocalDate;
+import java.util.*;
+
+/**
+ *
+ * @author NZXT-PC
+ */
+public class Proccesor implements Parsable&lt;Proccesor&gt; {
+
+    // bendri duomenys visiems Procesoriams (visai klasei)
+    private static final int minYear = 2000;
+<span class="fc" id="L18">    private static final int currentYear = LocalDate.now().getYear();</span>
+    private static final double minPrice = 10.0;
+    private static final double maxPrice = 210_000.0;
+
+    // kiekvieno Procesoriaus individualūs duomenys
+<span class="pc" id="L23">    private String type = &quot;&quot;;</span>
+<span class="pc" id="L24">    private String brand = &quot;&quot;;</span>
+<span class="pc" id="L25">    private String model = &quot;&quot;;</span>
+<span class="pc" id="L26">    private int year = -1;</span>
+<span class="pc" id="L27">    private double price = -1.0;</span>
+
+<span class="nc" id="L29">    public Proccesor() {</span>
+
+<span class="nc" id="L31">    }</span>
+
+<span class="fc" id="L33">    public Proccesor(String type, String brand, String model, int year, double price) {</span>
+<span class="fc" id="L34">        this.type = type;</span>
+<span class="fc" id="L35">        this.brand = brand;</span>
+<span class="fc" id="L36">        this.model = model;</span>
+<span class="fc" id="L37">        this.year = year;</span>
+<span class="fc" id="L38">        this.price = price;</span>
+
+<span class="fc" id="L40">        validate();</span>
+<span class="fc" id="L41">    }</span>
+
+<span class="fc" id="L43">    public Proccesor(String dataString) {</span>
+<span class="fc" id="L44">        this.parse(dataString);</span>
+<span class="fc" id="L45">        validate();</span>
+<span class="fc" id="L46">    }</span>
+
+<span class="nc" id="L48">    public Proccesor(Builder builder) {</span>
+<span class="nc" id="L49">        this.type = builder.type;</span>
+<span class="nc" id="L50">        this.brand = builder.brand;</span>
+<span class="nc" id="L51">        this.model = builder.model;</span>
+<span class="nc" id="L52">        this.year = builder.year;</span>
+<span class="nc" id="L53">        this.price = builder.price;</span>
+
+<span class="nc" id="L55">        validate();</span>
+<span class="nc" id="L56">    }</span>
+
+    private void validate() {
+<span class="fc" id="L59">        String errorType = &quot;&quot;;</span>
+<span class="pc bpc" id="L60" title="2 of 4 branches missed.">        if (year &lt; minYear || year &gt; currentYear) {</span>
+<span class="nc" id="L61">            errorType = &quot;Netinkami gamybos metai, turi būti [&quot;</span>
+                    + minYear + &quot;:&quot; + currentYear + &quot;]&quot;;
+        }
+<span class="pc bpc" id="L64" title="2 of 4 branches missed.">        if (price &lt; minPrice || price &gt; maxPrice) {</span>
+<span class="nc" id="L65">            errorType += &quot; Kaina už leistinų ribų [&quot; + minPrice</span>
+                    + &quot;:&quot; + maxPrice + &quot;]&quot;;
+        }
+
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if (!errorType.isEmpty()) {</span>
+<span class="nc" id="L70">            Ks.ern(&quot;Procesorius yra blogai sugeneruotas: &quot; + errorType);</span>
+        }
+<span class="fc" id="L72">    }</span>
+
+    @Override
+    public final void parse(String data) {
+        try {   // duomenys, atskirti tarpais
+<span class="fc" id="L77">            Scanner scanner = new Scanner(data);</span>
+<span class="fc" id="L78">            type = scanner.next();</span>
+<span class="fc" id="L79">            brand = scanner.next();</span>
+<span class="fc" id="L80">            model = scanner.next();</span>
+<span class="fc" id="L81">            year = scanner.nextInt();</span>
+<span class="fc" id="L82">            setPrice(scanner.nextDouble());</span>
+
+<span class="nc" id="L84">        } catch (InputMismatchException e) {</span>
+<span class="nc" id="L85">            Ks.ern(&quot;Blogas duomenų formatas -&gt; &quot; + data);</span>
+<span class="nc" id="L86">        } catch (NoSuchElementException e) {</span>
+<span class="nc" id="L87">            Ks.ern(&quot;Trūksta duomenų -&gt; &quot; + data);</span>
+<span class="pc" id="L88">        }</span>
+<span class="fc" id="L89">    }</span>
+
+    @Override
+    public String toString() {  // papildyta su carRegNr
+<span class="nc" id="L93">        return type + &quot;_&quot; + brand + &quot;:&quot; + model + &quot; &quot; + year + &quot; &quot; + String.format(&quot;%4.1f&quot;, price);</span>
+    }
+
+    public String ToString_data() {  // papildyta su carRegNr
+<span class="nc" id="L97">        return type + &quot; &quot; + brand + &quot; &quot; + model + &quot; &quot; + year + &quot; &quot; + String.format(&quot;%4.1f&quot;, price);</span>
+    }
+
+    public String getType() {
+<span class="nc" id="L101">        return type;</span>
+    }
+
+    public String getBrand() {
+<span class="nc" id="L105">        return brand;</span>
+    }
+
+    public String getModel() {
+<span class="nc" id="L109">        return model;</span>
+    }
+
+    public int getYear() {
+<span class="nc" id="L113">        return year;</span>
+    }
+
+    public double getPrice() {
+<span class="nc" id="L117">        return price;</span>
+    }
+
+    // keisti bus galima tik kainą - kiti parametrai pastovūs
+    public void setPrice(double price) {
+<span class="fc" id="L122">        this.price = price;</span>
+<span class="fc" id="L123">    }</span>
+    
+        @Override
+    public int hashCode() {
+<span class="nc" id="L127">        int hash = 5;</span>
+<span class="nc" id="L128">        hash = 29 * hash + Objects.hashCode(this.type);</span>
+<span class="nc" id="L129">        hash = 29 * hash + Objects.hashCode(this.brand);</span>
+<span class="nc" id="L130">        hash = 29 * hash + Objects.hashCode(this.model);</span>
+<span class="nc" id="L131">        hash = 29 * hash + this.year;</span>
+<span class="nc" id="L132">        hash = 29 * hash + (int) (Double.doubleToLongBits(this.price) ^ (Double.doubleToLongBits(this.price) &gt;&gt;&gt; 32));</span>
+<span class="nc" id="L133">        return hash;</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        if (this == obj) {</span>
+<span class="fc" id="L139">            return true;</span>
+        }
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if (obj == null) {</span>
+<span class="nc" id="L142">            return false;</span>
+        }
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        if (getClass() != obj.getClass()) {</span>
+<span class="fc" id="L145">            return false;</span>
+        }
+<span class="fc" id="L147">        final Proccesor other = (Proccesor) obj;</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        if (this.year != other.year) {</span>
+<span class="fc" id="L149">            return false;</span>
+        }
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        if (Double.doubleToLongBits(this.price) != Double.doubleToLongBits(other.price)) {</span>
+<span class="fc" id="L152">            return false;</span>
+        }
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        if (!Objects.equals(this.type, other.type)) {</span>
+<span class="nc" id="L155">            return false;</span>
+        }
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (!Objects.equals(this.brand, other.brand)) {</span>
+<span class="fc" id="L158">            return false;</span>
+        }
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        if (!Objects.equals(this.model, other.model)) {</span>
+<span class="nc" id="L161">            return false;</span>
+        }
+<span class="nc" id="L163">        return true;</span>
+    }
+
+    // Car klases objektų gamintojas (builder'is)
+<span class="nc" id="L167">    public static class Builder {</span>
+
+<span class="nc" id="L169">        private final static Random RANDOM = new Random(2017);  // Atsitiktinių generatorius</span>
+<span class="nc" id="L170">        private final static String[][] MODELS = { // galimų type/brand/model masyvas</span>
+            {&quot;GPU&quot;, &quot;Nvidia&quot;, &quot;gtx_770&quot;, &quot;rtx_2070_super&quot;, &quot;rtx_2080&quot;, &quot;gtx_1080TI&quot;},
+            {&quot;GPU&quot;, &quot;AMD&quot;, &quot;rx570&quot;, &quot;rx470&quot;, &quot;rx580&quot;, &quot;Vega_64&quot;},
+            {&quot;CPU&quot;, &quot;Intel&quot;, &quot;i9-9900k&quot;, &quot;i7-9700k&quot;, &quot;i5-6600k&quot;},
+            {&quot;CPU&quot;, &quot;AMD&quot;, &quot;Ryzen_3900x&quot;, &quot;Ryzen_3700x&quot;, &quot;ryzen_3600&quot;}
+        };
+
+<span class="nc" id="L177">        private String type = &quot;&quot;;</span>
+<span class="nc" id="L178">        private String brand = &quot;&quot;;</span>
+<span class="nc" id="L179">        private String model = &quot;&quot;;</span>
+<span class="nc" id="L180">        private int year = -1;</span>
+<span class="nc" id="L181">        private double price = -1.0;</span>
+
+        public Proccesor build() {
+<span class="nc" id="L184">            return new Proccesor(this);</span>
+        }
+
+        public Proccesor buildRandom() {
+<span class="nc" id="L188">            int tIndex = RANDOM.nextInt(MODELS.length);        // markės indeksas  0..</span>
+<span class="nc" id="L189">            int mIndex = RANDOM.nextInt(MODELS[tIndex].length - 2) + 2;// modelio indeksas 1..</span>
+<span class="nc" id="L190">            return new Proccesor(</span>
+                    MODELS[tIndex][0],
+                    MODELS[tIndex][1],
+                    MODELS[tIndex][mIndex],
+<span class="nc" id="L194">                    2000 + RANDOM.nextInt(20), // metai tarp 1999 ir 2019</span>
+<span class="nc" id="L195">                    ds.proj.util.AditionalFunctions.round((10 + RANDOM.nextDouble() * 200_0),1)); // kaina tarp 10 ir 201_0</span>
+        }
+
+        public Builder type(String type) {
+<span class="nc" id="L199">            this.type = type;</span>
+<span class="nc" id="L200">            return this;</span>
+        }
+
+        public Builder brand(String brand) {
+<span class="nc" id="L204">            this.brand = brand;</span>
+<span class="nc" id="L205">            return this;</span>
+        }
+
+        public Builder model(String model) {
+<span class="nc" id="L209">            this.model = model;</span>
+<span class="nc" id="L210">            return this;</span>
+        }
+
+        public Builder year(int year) {
+<span class="nc" id="L214">            this.year = year;</span>
+<span class="nc" id="L215">            return this;</span>
+        }
+
+        public Builder price(double price) {
+<span class="nc" id="L219">            this.price = price;</span>
+<span class="nc" id="L220">            return this;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

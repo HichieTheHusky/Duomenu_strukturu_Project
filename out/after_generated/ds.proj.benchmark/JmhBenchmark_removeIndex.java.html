@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JmhBenchmark_removeIndex.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$ds_proj_in_Duomenu_strukturu_Project.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.benchmark</a> &gt; <span class="el_source">JmhBenchmark_removeIndex.java</span></div><h1>JmhBenchmark_removeIndex.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ds.proj.benchmark;
+
+import ds.proj.util.UnrolledLinkedList;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+
+@BenchmarkMode(Mode.AverageTime)
+
+@State(Scope.Benchmark)
+
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
+
+@Warmup(time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(time = 1, timeUnit = TimeUnit.SECONDS)
+/**
+ *
+ * @author husky
+ */
+<span class="nc" id="L32">public class JmhBenchmark_removeIndex {</span>
+
+    static final int OPERATION_COUNT = 1_000;
+
+    @Param({&quot;4000&quot;, &quot;8000&quot;, &quot;16000&quot;, &quot;32000&quot;})
+    public int listSize;
+
+<span class="nc" id="L39">    UnrolledLinkedList&lt;Float&gt; ULL = new UnrolledLinkedList&lt;&gt;();</span>
+<span class="nc" id="L40">    LinkedList&lt;Float&gt; linkedList = new LinkedList&lt;&gt;();</span>
+
+<span class="nc" id="L42">    float[] ULLTest = new float[32000];</span>
+<span class="nc" id="L43">    float[] listTest = new float[32000];</span>
+<span class="nc" id="L44">    int[] indexes = new int[OPERATION_COUNT];</span>
+
+    @Setup(Level.Invocation)
+    public void generateLists() {
+<span class="nc" id="L48">        util.generateList(ULL, listSize, ULLTest);</span>
+<span class="nc" id="L49">        util.generateList(linkedList, listSize, listTest);</span>
+<span class="nc" id="L50">    }</span>
+
+    @Setup(Level.Iteration)
+    public void generateIndexes() {
+<span class="nc" id="L54">        util.generateIndexes(indexes, listSize);</span>
+<span class="nc" id="L55">    }</span>
+
+    @Benchmark
+    public void unrolledLinkedListFromIndexRemove(Blackhole bh) {
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        for (int i : indexes) {</span>
+<span class="nc" id="L61">            bh.consume(ULL.remove(i));</span>
+        }
+<span class="nc" id="L63">    }</span>
+
+    @Benchmark
+    public void linkedListFromListIndexRemove(Blackhole bh) {
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        for (int i : indexes) {</span>
+<span class="nc" id="L69">            bh.consume(linkedList.remove(i));</span>
+        }
+
+<span class="nc" id="L72">    }</span>
+
+    public static void main(String[] args) throws RunnerException {
+<span class="nc" id="L75">        Options opt = new OptionsBuilder()</span>
+<span class="nc" id="L76">                .include(JmhBenchmark_removeIndex.class.getSimpleName())</span>
+<span class="nc" id="L77">                .forks(1)</span>
+<span class="nc" id="L78">                .build();</span>
+<span class="nc" id="L79">        new Runner(opt).run();</span>
+<span class="nc" id="L80">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

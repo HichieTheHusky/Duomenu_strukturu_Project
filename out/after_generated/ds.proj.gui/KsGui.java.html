@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KsGui.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$ds_proj_in_Duomenu_strukturu_Project.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.gui</a> &gt; <span class="el_source">KsGui.java</span></div><h1>KsGui.java</h1><pre class="source lang-java linenums">package ds.proj.gui;
+
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+
+/**
+ * Klasė, skirta duomenų išvedimui į Java GUI
+ *
+ * @author darius
+ */
+<span class="nc" id="L17">public class KsGui {</span>
+
+    private static int lineNr;
+<span class="nc" id="L20">    private static boolean formatStartOfLine = true;</span>
+
+    public static void setFormatStartOfLine(boolean formatStartOfLine) {
+<span class="nc" id="L23">        KsGui.formatStartOfLine = formatStartOfLine;</span>
+<span class="nc" id="L24">    }</span>
+
+    private static String getStartOfLine() {
+<span class="nc bnc" id="L27" title="All 2 branches missed.">        return (formatStartOfLine) ? ++lineNr + &quot;| &quot; : &quot;&quot;;</span>
+    }
+
+    public static void ou(TextArea ta, Object o) {
+<span class="nc" id="L31">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (o instanceof Iterable) {</span>
+<span class="nc" id="L33">            ((Iterable) o).forEach(p -&gt; sb.append(p).append(System.lineSeparator()));</span>
+        } else {
+<span class="nc" id="L35">            sb.append(o.toString());</span>
+        }
+<span class="nc" id="L37">        Platform.runLater(() -&gt; ta.appendText(sb.toString()));</span>
+<span class="nc" id="L38">    }</span>
+
+    public static void oun(TextArea ta, Object o) {
+<span class="nc" id="L41">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (o instanceof Iterable) {</span>
+<span class="nc" id="L43">            ((Iterable) o).forEach(p -&gt; sb.append(p).append(System.lineSeparator()));</span>
+<span class="nc" id="L44">            sb.append(System.lineSeparator());</span>
+        } else {
+<span class="nc" id="L46">            sb.append(o.toString()).append(System.lineSeparator());</span>
+        }
+<span class="nc" id="L48">        Platform.runLater(() -&gt; ta.appendText(sb.toString()));</span>
+<span class="nc" id="L49">    }</span>
+
+    public static void ou(TextArea ta, Object o, String msg) {
+<span class="nc" id="L52">        String startOfLine = getStartOfLine();</span>
+<span class="nc" id="L53">        Platform.runLater(() -&gt; ta.appendText(startOfLine + msg + &quot;: &quot;));</span>
+<span class="nc" id="L54">        oun(ta, o);</span>
+<span class="nc" id="L55">    }</span>
+
+    public static void oun(TextArea ta, Object o, String msg) {
+<span class="nc" id="L58">        String startOfLine = getStartOfLine();</span>
+<span class="nc" id="L59">        Platform.runLater(() -&gt; ta.appendText(startOfLine + msg + &quot;: &quot; + System.lineSeparator()));</span>
+<span class="nc" id="L60">        oun(ta, o);</span>
+<span class="nc" id="L61">    }</span>
+
+    public static void ounArgs(TextArea ta, String format, Object... args) {
+<span class="nc" id="L64">        String startOfLine = getStartOfLine();</span>
+<span class="nc" id="L65">        Platform.runLater(() -&gt; ta.appendText(startOfLine + String.format(format, args) + System.lineSeparator()));</span>
+<span class="nc" id="L66">    }</span>
+
+    public static void ounerr(TextArea ta, Exception e) {
+<span class="nc" id="L69">        Region region = (Region) ta.lookup(&quot;.content&quot;);</span>
+<span class="nc" id="L70">        region.setBackground(new Background(new BackgroundFill(Color.PINK, CornerRadii.EMPTY, Insets.EMPTY)));</span>
+<span class="nc" id="L71">        String startOfLine = getStartOfLine();</span>
+<span class="nc" id="L72">        Platform.runLater(() -&gt; ta.appendText(startOfLine + e.getLocalizedMessage() + System.lineSeparator()));</span>
+<span class="nc" id="L73">    }</span>
+
+    public static void ounerr(TextArea ta, String msg) {
+<span class="nc" id="L76">        Region region = (Region) ta.lookup(&quot;.content&quot;);</span>
+<span class="nc" id="L77">        region.setBackground(new Background(new BackgroundFill(Color.PINK, CornerRadii.EMPTY, Insets.EMPTY)));</span>
+<span class="nc" id="L78">        String startOfLine = getStartOfLine();</span>
+<span class="nc" id="L79">        Platform.runLater(() -&gt; ta.appendText(startOfLine + msg + System.lineSeparator()));</span>
+<span class="nc" id="L80">    }</span>
+
+    public static void ounerr(TextArea ta, String msg, String parameter) {
+<span class="nc" id="L83">        Region region = (Region) ta.lookup(&quot;.content&quot;);</span>
+<span class="nc" id="L84">        region.setBackground(new Background(new BackgroundFill(Color.PINK, CornerRadii.EMPTY, Insets.EMPTY)));</span>
+<span class="nc" id="L85">        String startOfLine = getStartOfLine();</span>
+<span class="nc bnc" id="L86" title="All 4 branches missed.">        Platform.runLater(() -&gt; ta.appendText(startOfLine + msg + ((parameter == null || parameter.isEmpty())</span>
+<span class="nc" id="L87">                ? &quot;&quot; : &quot;: &quot; + parameter) + System.lineSeparator()));</span>
+<span class="nc" id="L88">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

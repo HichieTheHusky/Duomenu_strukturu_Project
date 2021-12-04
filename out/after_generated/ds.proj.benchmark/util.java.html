@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>util.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$ds_proj_in_Duomenu_strukturu_Project.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.benchmark</a> &gt; <span class="el_source">util.java</span></div><h1>util.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ds.proj.benchmark;
+
+import ds.proj.util.UnrolledLinkedList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
+/**
+ *
+ * @author husky
+ */
+<span class="nc" id="L18">public class util {</span>
+
+<span class="fc" id="L20">    static Random generator = new Random();</span>
+
+    static void generateList(List&lt;Float&gt; list, int size, float[] test) {
+
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        for (int i = 0; i &lt; size; i++) {</span>
+<span class="fc" id="L25">            float obj = generator.nextFloat();</span>
+<span class="fc" id="L26">            list.add(obj);</span>
+<span class="fc" id="L27">            test[i] = obj;</span>
+        }
+
+<span class="fc" id="L30">        shuffleProc(test);</span>
+
+<span class="fc" id="L32">    }</span>
+
+    static void generateList(UnrolledLinkedList&lt;Float&gt; list, int size, float[] test) {
+
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        for (int i = 0; i &lt; size; i++) {</span>
+<span class="nc" id="L37">            float obj = generator.nextFloat();</span>
+<span class="nc" id="L38">            list.add(obj);</span>
+<span class="nc" id="L39">            test[i] = obj;</span>
+        }
+
+<span class="nc" id="L42">        shuffleProc(test);</span>
+<span class="nc" id="L43">    }</span>
+
+    static void generateIndexes(int[] indexes, int listSize) {
+<span class="fc" id="L46">        int k = listSize - 2_000;</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int i = 0; i &lt; indexes.length; i++) {</span>
+<span class="fc" id="L48">            indexes[i] = generator.nextInt(k);</span>
+//            k++;
+        }
+
+<span class="fc" id="L52">    }</span>
+
+    static void shuffleProc(float[] ar) {
+
+<span class="fc" id="L56">        Random rnd = ThreadLocalRandom.current();</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        for (int i = ar.length - 1; i &gt; 0; i--) {</span>
+<span class="fc" id="L58">            int index = rnd.nextInt(i + 1);</span>
+            // Simple swap
+<span class="fc" id="L60">            float a = ar[index];</span>
+<span class="fc" id="L61">            ar[index] = ar[i];</span>
+<span class="fc" id="L62">            ar[i] = a;</span>
+        }
+<span class="fc" id="L64">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainWindow.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$ds_proj_in_Duomenu_strukturu_Project.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.gui</a> &gt; <span class="el_source">MainWindow.java</span></div><h1>MainWindow.java</h1><pre class="source lang-java linenums">package ds.proj.gui;
+
+import ds.proj.demo.Proccesor;
+import ds.proj.demo.ProccesorsGenerator;
+import ds.proj.util.ParsableUnrolledLinkedList;
+import ds.proj.util.UnrolledLinkedList;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.SynchronousQueue;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+/**
+ *
+ * @author husky
+ */
+public class MainWindow extends BorderPane implements EventHandler&lt;ActionEvent&gt; {
+
+<span class="nc" id="L43">    private static final ResourceBundle MESSAGES = ResourceBundle.getBundle(&quot;ds.proj.gui.messages&quot;);</span>
+    private static final int TF_WIDTH = 200;
+    private static final int TF_WIDTH_SMALLER = 80;
+    private static final double SPACING = 5.0;
+<span class="nc" id="L47">    private static final Insets INSETS = new Insets(SPACING);</span>
+    private static final double SPACING_SMALLER = 2.0;
+<span class="nc" id="L49">    private static final Insets INSETS_SMALLER = new Insets(SPACING_SMALLER);</span>
+
+<span class="nc" id="L51">    private final ComboBox cmbFilterType = new ComboBox();</span>
+<span class="nc" id="L52">    private final ComboBox cmbFilterBrand = new ComboBox();</span>
+<span class="nc" id="L53">    private final TextArea taInput = new TextArea();</span>
+<span class="nc" id="L54">    private final GridPane paneParam12Events = new GridPane();</span>
+<span class="nc" id="L55">    private final GridPane paneRight = new GridPane();</span>
+<span class="nc" id="L56">    private final GridPane paneCenter = new GridPane();</span>
+<span class="nc" id="L57">    private final TextArea taEvents = new TextArea();</span>
+    private Panels paneParam01, paneParam02, paneParam1, paneButtons, paneButton;
+    private MapTable&lt;String[], String&gt; table, myTable;
+    private MainWindowMenu mainWindowMenu;
+    private final Stage stage;
+
+    private ParsableUnrolledLinkedList&lt;Proccesor&gt; list;
+    private ParsableUnrolledLinkedList&lt;Proccesor&gt; mylist;
+    private int sizeOfInitialSubSet, sizeOfGenSet, colWidth, initialCapacity;
+<span class="nc" id="L66">    private final ProccesorsGenerator proccesorsGenerator = new ProccesorsGenerator();</span>
+
+<span class="nc" id="L68">    public MainWindow(Stage stage) {</span>
+<span class="nc" id="L69">        this.stage = stage;</span>
+<span class="nc" id="L70">        initComponents();</span>
+<span class="nc" id="L71">    }</span>
+
+    private void initComponents() {
+        // Formuojamas mėlynos spalvos skydelis (dešinėje pusėje)
+<span class="nc" id="L75">        paneParam01 = new Panels(</span>
+                new String[]{
+<span class="nc" id="L77">                    MESSAGES.getString(&quot;lblParam00&quot;),</span>
+<span class="nc" id="L78">                    MESSAGES.getString(&quot;lblParam01&quot;)},</span>
+                new String[]{
+<span class="nc" id="L80">                    MESSAGES.getString(&quot;tfParam00&quot;),</span>
+<span class="nc" id="L81">                    MESSAGES.getString(&quot;tfParam01&quot;)}, TF_WIDTH_SMALLER);</span>
+
+<span class="nc" id="L83">        paneParam02 = new Panels(</span>
+                new String[]{
+<span class="nc" id="L85">                    MESSAGES.getString(&quot;lblParam02&quot;),</span>
+<span class="nc" id="L86">                    MESSAGES.getString(&quot;lblParam03&quot;)},</span>
+                new String[]{
+<span class="nc" id="L88">                    MESSAGES.getString(&quot;tfParam02&quot;),</span>
+<span class="nc" id="L89">                    MESSAGES.getString(&quot;tfParam03&quot;)}, TF_WIDTH_SMALLER);</span>
+
+<span class="nc" id="L91">        cmbFilterType.setItems(FXCollections.observableArrayList(</span>
+<span class="nc" id="L92">                MESSAGES.getString(&quot;cmbType1&quot;),</span>
+<span class="nc" id="L93">                MESSAGES.getString(&quot;cmbType2&quot;),</span>
+<span class="nc" id="L94">                MESSAGES.getString(&quot;cmbType3&quot;)));</span>
+<span class="nc" id="L95">        cmbFilterType.setOnAction(this);</span>
+<span class="nc" id="L96">        cmbFilterType.getSelectionModel().select(0);</span>
+<span class="nc" id="L97">        cmbFilterBrand.setItems(FXCollections.observableArrayList(</span>
+<span class="nc" id="L98">                MESSAGES.getString(&quot;cmbBrand1&quot;),</span>
+<span class="nc" id="L99">                MESSAGES.getString(&quot;cmbBrand2&quot;),</span>
+<span class="nc" id="L100">                MESSAGES.getString(&quot;cmbBrand3&quot;),</span>
+<span class="nc" id="L101">                MESSAGES.getString(&quot;cmbBrand4&quot;)));</span>
+<span class="nc" id="L102">        cmbFilterBrand.setOnAction(this);</span>
+<span class="nc" id="L103">        cmbFilterBrand.getSelectionModel().select(0);</span>
+
+        // Formuojamas mygtukų tinklelis (pilkas). Naudojama klasė Panels.
+<span class="nc" id="L106">        paneButtons = new Panels(</span>
+                new String[]{
+<span class="nc" id="L108">                    MESSAGES.getString(&quot;button1&quot;),</span>
+<span class="nc" id="L109">                    MESSAGES.getString(&quot;button2&quot;),</span>
+<span class="nc" id="L110">                    MESSAGES.getString(&quot;button3&quot;),</span>
+<span class="nc" id="L111">                    MESSAGES.getString(&quot;button4&quot;),</span>
+<span class="nc" id="L112">                    MESSAGES.getString(&quot;button6&quot;)}, 1, 5);</span>
+<span class="nc" id="L113">        paneButtons.getButtons().forEach((btn) -&gt; btn.setOnAction(this));</span>
+<span class="nc" id="L114">        IntStream.of(2, 3, 4).forEach(p -&gt; paneButtons.getButtons().get(p).setDisable(true));</span>
+
+<span class="nc" id="L116">        paneButton = new Panels(</span>
+                new String[]{
+<span class="nc" id="L118">                    MESSAGES.getString(&quot;button5&quot;)}, 1, 1);</span>
+<span class="nc" id="L119">        paneButton.getButtons().forEach((btn) -&gt; btn.setOnAction(this));</span>
+<span class="nc" id="L120">        IntStream.of(0).forEach(p -&gt; paneButton.getButtons().get(p).setDisable(true));</span>
+
+        // Viskas sudedama į mėlynos spalvos skydelį 
+<span class="nc" id="L123">        GridPane.setVgrow(taInput, Priority.ALWAYS);</span>
+<span class="nc" id="L124">        taInput.setPrefWidth(TF_WIDTH);</span>
+<span class="nc" id="L125">        cmbFilterType.setPrefWidth(TF_WIDTH);</span>
+<span class="nc" id="L126">        cmbFilterBrand.setPrefWidth(TF_WIDTH);</span>
+<span class="nc" id="L127">        Stream.of(</span>
+                paneParam01,
+                paneParam02,
+<span class="nc" id="L130">                new Label(MESSAGES.getString(&quot;border0&quot;)),</span>
+                cmbFilterType,
+                cmbFilterBrand,
+                paneButton,
+<span class="nc" id="L134">                new Label(MESSAGES.getString(&quot;border1&quot;)),</span>
+                taInput,
+                paneButtons
+<span class="nc" id="L137">        ).forEach(n -&gt; paneRight.addColumn(0, n));</span>
+<span class="nc" id="L138">        paneRight.setHgap(SPACING);</span>
+<span class="nc" id="L139">        paneRight.setVgap(SPACING);</span>
+<span class="nc" id="L140">        paneRight.setPadding(INSETS);</span>
+
+        // Formuojama pirmoji parametrų lentelė (šviesiai žalia). Naudojama klasė Panels.
+<span class="nc" id="L143">        paneParam1 = new Panels(</span>
+                new String[]{
+<span class="nc" id="L145">                    MESSAGES.getString(&quot;lblParam11&quot;),</span>
+<span class="nc" id="L146">                    MESSAGES.getString(&quot;lblParam12&quot;),</span>
+<span class="nc" id="L147">                    MESSAGES.getString(&quot;lblParam13&quot;),</span>
+<span class="nc" id="L148">                    MESSAGES.getString(&quot;lblParam15&quot;),</span>
+<span class="nc" id="L149">                    MESSAGES.getString(&quot;lblParam21&quot;)},</span>
+                new String[]{
+<span class="nc" id="L151">                    MESSAGES.getString(&quot;tfParam11&quot;),</span>
+<span class="nc" id="L152">                    MESSAGES.getString(&quot;tfParam12&quot;),</span>
+<span class="nc" id="L153">                    MESSAGES.getString(&quot;tfParam13&quot;),</span>
+<span class="nc" id="L154">                    MESSAGES.getString(&quot;tfParam15&quot;),</span>
+<span class="nc" id="L155">                    MESSAGES.getString(&quot;tfParam21&quot;)}, TF_WIDTH_SMALLER);</span>
+
+        // Dviejų lentelių skydeliai sudedami į šviesiai pilką skydelį
+<span class="nc" id="L158">        paneParam12Events.setPadding(new Insets(SPACING_SMALLER, SPACING, SPACING, SPACING));</span>
+<span class="nc" id="L159">        paneParam12Events.setVgap(SPACING_SMALLER);</span>
+<span class="nc" id="L160">        paneParam12Events.setHgap(SPACING);</span>
+<span class="nc" id="L161">        paneParam12Events.add(new Label(MESSAGES.getString(&quot;border2&quot;)), 0, 0);</span>
+<span class="nc" id="L162">        GridPane.setHgrow(taEvents, Priority.ALWAYS);</span>
+<span class="nc" id="L163">        paneParam12Events.addRow(1, paneParam1, taEvents);</span>
+<span class="nc" id="L164">        paneParam12Events.add(new Label(MESSAGES.getString(&quot;border4&quot;)), 1, 0);</span>
+
+        // Sukuriama lentelė, sukuriamas trūkstamas metodas
+<span class="nc" id="L167">        table = new MapTable&lt;String[], String&gt;() {</span>
+            @Override
+            public ObservableValue&lt;String&gt; returnValue(TableColumn.CellDataFeatures&lt;String[], String&gt; p) {
+<span class="nc" id="L170">                int index = Integer.parseInt(p.getTableColumn().getId());</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                return new SimpleStringProperty(index &lt; p.getValue().length ? p.getValue()[index] : &quot;&quot;);</span>
+            }
+        };
+
+<span class="nc" id="L175">        myTable = new MapTable&lt;String[], String&gt;() {</span>
+            @Override
+            public ObservableValue&lt;String&gt; returnValue(TableColumn.CellDataFeatures&lt;String[], String&gt; p) {
+<span class="nc" id="L178">                int index = Integer.parseInt(p.getTableColumn().getId());</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                return new SimpleStringProperty(index &lt; p.getValue().length ? p.getValue()[index] : &quot;&quot;);</span>
+            }
+        };
+
+        // Sukuriamas meniu
+<span class="nc" id="L184">        mainWindowMenu = new MainWindowMenu() {</span>
+            @Override
+            public void handle(ActionEvent ae) {
+<span class="nc" id="L187">                Region region = (Region) taEvents.lookup(&quot;.content&quot;);</span>
+<span class="nc" id="L188">                region.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));</span>
+
+                try {
+<span class="nc" id="L191">                    Object source = ae.getSource();</span>
+<span class="nc" id="L192">                    KsGui.setFormatStartOfLine(true);</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                    if (source.equals(mainWindowMenu.getMenus().get(0).getItems().get(0))) {</span>
+<span class="nc" id="L194">                        fileChooseMenu();</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                    } else if (source.equals(mainWindowMenu.getMenus().get(0).getItems().get(1))) {</span>
+<span class="nc" id="L196">                        fileSaveMenu();</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">                    } else if (source.equals(mainWindowMenu.getMenus().get(0).getItems().get(3))) {</span>
+<span class="nc" id="L198">                        System.exit(0);</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                    } else if (source.equals(mainWindowMenu.getMenus().get(1).getItems().get(0))) {</span>
+<span class="nc" id="L200">                        Alert alert = new Alert(Alert.AlertType.INFORMATION);</span>
+<span class="nc" id="L201">                        alert.initStyle(StageStyle.UTILITY);</span>
+<span class="nc" id="L202">                        alert.setTitle(MESSAGES.getString(&quot;menuItem21&quot;));</span>
+<span class="nc" id="L203">                        alert.setHeaderText(MESSAGES.getString(&quot;author&quot;));</span>
+<span class="nc" id="L204">                        alert.showAndWait();</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">                    } else if (source.equals(mainWindowMenu.getMenus().get(2).getItems().get(2))) {</span>
+<span class="nc" id="L206">                        mapGeneration(null);</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">                    } else if (source.equals(mainWindowMenu.getMenus().get(2).getItems().get(4))) {</span>
+<span class="nc" id="L208">                        clearListtable();</span>
+                    }
+<span class="nc" id="L210">                } catch (ValidationException e) {</span>
+<span class="nc" id="L211">                    KsGui.ounerr(taEvents, e.getMessage());</span>
+<span class="nc" id="L212">                } catch (Exception e) {</span>
+<span class="nc" id="L213">                    KsGui.ounerr(taEvents, MESSAGES.getString(&quot;systemError&quot;));</span>
+<span class="nc" id="L214">                    e.printStackTrace(System.out);</span>
+<span class="nc" id="L215">                }</span>
+<span class="nc" id="L216">                KsGui.setFormatStartOfLine(false);</span>
+<span class="nc" id="L217">            }</span>
+        };
+
+        // Formuojamas Lab3 langas
+        // ..viršuje, dešinėje, centre ir apačioje talpiname objektus..
+<span class="nc" id="L222">        setTop(mainWindowMenu);</span>
+
+<span class="nc" id="L224">        VBox vboxTable = new VBox();</span>
+<span class="nc" id="L225">        vboxTable.setPadding(INSETS_SMALLER);</span>
+<span class="nc" id="L226">        VBox.setVgrow(table, Priority.ALWAYS);</span>
+<span class="nc" id="L227">        vboxTable.getChildren().addAll(new Label(MESSAGES.getString(&quot;border3&quot;)), table);</span>
+
+<span class="nc" id="L229">        VBox myVboxTable = new VBox();</span>
+<span class="nc" id="L230">        myVboxTable.setPadding(INSETS_SMALLER);</span>
+<span class="nc" id="L231">        VBox.setVgrow(myTable, Priority.ALWAYS);</span>
+<span class="nc" id="L232">        myVboxTable.getChildren().addAll(new Label(MESSAGES.getString(&quot;border5&quot;)), myTable);</span>
+
+<span class="nc" id="L234">        Stream.of(</span>
+                vboxTable,
+                myVboxTable
+<span class="nc" id="L237">        ).forEach(n -&gt; paneCenter.addColumn(0, n));</span>
+<span class="nc" id="L238">        paneCenter.setHgap(SPACING);</span>
+<span class="nc" id="L239">        paneCenter.setVgap(SPACING);</span>
+<span class="nc" id="L240">        paneCenter.setPadding(INSETS);</span>
+
+<span class="nc" id="L242">        setRight(paneRight);</span>
+<span class="nc" id="L243">        setCenter(paneCenter);</span>
+<span class="nc" id="L244">        setBottom(paneParam12Events);</span>
+<span class="nc" id="L245">        appearance();</span>
+<span class="nc" id="L246">    }</span>
+
+    private void appearance() {
+<span class="nc" id="L249">        paneParam1.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, CornerRadii.EMPTY, Insets.EMPTY)));</span>
+<span class="nc" id="L250">        paneRight.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));</span>
+<span class="nc" id="L251">        paneButtons.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));</span>
+<span class="nc" id="L252">        taInput.setFont(Font.font(&quot;Monospaced&quot;, 12));</span>
+<span class="nc" id="L253">        taEvents.setEditable(false);</span>
+<span class="nc" id="L254">        taEvents.setFont(Font.font(&quot;Monospaced&quot;, 12));</span>
+
+<span class="nc" id="L256">        TextField c = paneParam1.getTfOfTable().get(paneParam1.getTfOfTable().size() - 1);</span>
+<span class="nc" id="L257">        c.setEditable(false);</span>
+<span class="nc" id="L258">        c.setMouseTransparent(true);</span>
+<span class="nc" id="L259">        paneParam01.getTfOfTable().forEach(t -&gt; {</span>
+<span class="nc" id="L260">            t.setEditable(false);</span>
+<span class="nc" id="L261">            t.setMouseTransparent(true);</span>
+<span class="nc" id="L262">        });</span>
+
+<span class="nc" id="L264">    }</span>
+
+    @Override
+    public void handle(ActionEvent event) {
+<span class="nc" id="L268">        KsGui.setFormatStartOfLine(true);</span>
+<span class="nc" id="L269">        Platform.runLater(() -&gt; {</span>
+            try {
+<span class="nc" id="L271">                System.gc();</span>
+<span class="nc" id="L272">                System.gc();</span>
+<span class="nc" id="L273">                System.gc();</span>
+<span class="nc" id="L274">                Region region = (Region) taEvents.lookup(&quot;.content&quot;);</span>
+<span class="nc" id="L275">                region.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));</span>
+
+<span class="nc" id="L277">                Object source = event.getSource();</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">                if (source instanceof Button) {</span>
+<span class="nc" id="L279">                    handleButtons(source);</span>
+                }/* else if (source instanceof ComboBox &amp;&amp; (source.equals(cmbCollisionTypes) || source.equals(cmbHashFunctions))) {
+                IntStream.of(1, 3).forEach(p -&gt; paneButtons.getButtons().get(p).setDisable(true));
+                }*/
+<span class="nc" id="L283">            } catch (ValidationException e) {</span>
+<span class="nc" id="L284">                KsGui.ounerr(taEvents, MESSAGES.getString(e.getMessage()), e.getValue());</span>
+<span class="nc" id="L285">            } catch (UnsupportedOperationException e) {</span>
+<span class="nc" id="L286">                KsGui.ounerr(taEvents, e.getMessage());</span>
+<span class="nc" id="L287">            } catch (Exception e) {</span>
+<span class="nc" id="L288">                KsGui.ounerr(taEvents, MESSAGES.getString(&quot;systemError&quot;));</span>
+<span class="nc" id="L289">                e.printStackTrace(System.out);</span>
+<span class="nc" id="L290">            }</span>
+<span class="nc" id="L291">        });</span>
+<span class="nc" id="L292">    }</span>
+
+    public static void createAndShowGui(Stage stage) {
+<span class="nc" id="L295">        Platform.runLater(() -&gt; {</span>
+<span class="nc" id="L296">            Locale.setDefault(Locale.US); // Suvienodiname skaičių formatus</span>
+<span class="nc" id="L297">            MainWindow window = new MainWindow(stage);</span>
+<span class="nc" id="L298">            stage.setScene(new Scene(window, 1300, 700));</span>
+//            stage.setMaximized(true);
+<span class="nc" id="L300">            stage.setTitle(MESSAGES.getString(&quot;title&quot;));</span>
+<span class="nc" id="L301">            stage.getIcons().add(new Image(&quot;file:&quot; + MESSAGES.getString(&quot;icon&quot;)));</span>
+<span class="nc" id="L302">            stage.setOnCloseRequest(e -&gt; System.exit(0));</span>
+<span class="nc" id="L303">            stage.show();</span>
+<span class="nc" id="L304">        });</span>
+<span class="nc" id="L305">    }</span>
+
+    private void handleButtons(Object source) {
+<span class="nc bnc" id="L308" title="All 2 branches missed.">        if (source.equals(paneButton.getButtons().get(0))) {</span>
+<span class="nc" id="L309">            filter();</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">        } else if (source.equals(paneButtons.getButtons().get(0))) {</span>
+<span class="nc" id="L311">            setCash(-1);</span>
+<span class="nc bnc" id="L312" title="All 2 branches missed.">        } else if (source.equals(paneButtons.getButtons().get(1))) {</span>
+<span class="nc" id="L313">            addCash();</span>
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        } else if (source.equals(paneButtons.getButtons().get(2))) {</span>
+<span class="nc" id="L315">            buy();</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">        } else if (source.equals(paneButtons.getButtons().get(3))) {</span>
+<span class="nc" id="L317">            sell();</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">        } else if (source.equals(paneButtons.getButtons().get(4))) {</span>
+<span class="nc" id="L319">            addForSelling();</span>
+        }
+<span class="nc" id="L321">    }</span>
+
+    private void filter() {
+
+        ParsableUnrolledLinkedList&lt;Proccesor&gt; filtered;
+<span class="nc" id="L326">        filtered = new ParsableUnrolledLinkedList&lt;&gt;(initialCapacity, Proccesor::new);</span>
+
+<span class="nc" id="L328">        Iterator&lt;Proccesor&gt; it = list.iterator();</span>
+
+<span class="nc" id="L330">        int test1 = cmbFilterType.getSelectionModel().getSelectedIndex();</span>
+<span class="nc" id="L331">        int test2 = cmbFilterBrand.getSelectionModel().getSelectedIndex();</span>
+        String testType;
+        String testBrand;
+
+<span class="nc bnc" id="L335" title="All 3 branches missed.">        switch (test1) {</span>
+            case 0:
+<span class="nc" id="L337">                testType = &quot;CPU&quot;;</span>
+<span class="nc" id="L338">                break;</span>
+            case 1:
+<span class="nc" id="L340">                testType = &quot;GPU&quot;;</span>
+<span class="nc" id="L341">                break;</span>
+            default:
+<span class="nc" id="L343">                testType = &quot;none&quot;;</span>
+        }
+<span class="nc bnc" id="L345" title="All 4 branches missed.">        switch (test2) {</span>
+            case 0:
+<span class="nc" id="L347">                testBrand = &quot;Nvidia&quot;;</span>
+<span class="nc" id="L348">                break;</span>
+            case 1:
+<span class="nc" id="L350">                testBrand = &quot;Intel&quot;;</span>
+<span class="nc" id="L351">                break;</span>
+            case 2:
+<span class="nc" id="L353">                testBrand = &quot;AMD&quot;;</span>
+<span class="nc" id="L354">                break;</span>
+            default:
+<span class="nc" id="L356">                testBrand = &quot;none&quot;;</span>
+        }
+
+<span class="nc" id="L359">        double test3 = Double.parseDouble((String.valueOf(paneParam02.getTfOfTable().get(0).getText())));</span>
+<span class="nc" id="L360">        double test4 = Double.parseDouble((String.valueOf(paneParam02.getTfOfTable().get(1).getText())));</span>
+
+<span class="nc bnc" id="L362" title="All 2 branches missed.">        while (it.hasNext()) {</span>
+<span class="nc" id="L363">            Proccesor proc = it.next();</span>
+<span class="nc bnc" id="L364" title="All 4 branches missed.">            if (testType == &quot;none&quot; || proc.getType() == testType) {</span>
+<span class="nc bnc" id="L365" title="All 4 branches missed.">                if (testBrand == &quot;none&quot; || proc.getBrand() == testBrand) {</span>
+<span class="nc bnc" id="L366" title="All 4 branches missed.">                    if (test3 == 0 || proc.getPrice() &gt;= test3) {</span>
+<span class="nc bnc" id="L367" title="All 4 branches missed.">                        if (test4 == 0 || proc.getPrice() &lt;= test4) {</span>
+<span class="nc" id="L368">                            filtered.add(proc);</span>
+                        }
+                    }
+                }
+            }
+<span class="nc" id="L373">        }</span>
+
+<span class="nc" id="L375">        table.formTable(initialCapacity * 2 + 1, colWidth);</span>
+<span class="nc" id="L376">        String[][] modelList = filtered.getModelList();</span>
+<span class="nc" id="L377">        table.getItems().clear();</span>
+<span class="nc" id="L378">        table.setItems(FXCollections.observableArrayList(modelList));</span>
+<span class="nc" id="L379">    }</span>
+
+    private void setCash(double k) {
+<span class="nc" id="L382">        String price = &quot;&quot;;</span>
+<span class="nc bnc" id="L383" title="All 2 branches missed.">        if (k != -1) {</span>
+<span class="nc" id="L384">            price = String.valueOf(k);</span>
+        } else {
+<span class="nc" id="L386">            price = taInput.getText();</span>
+        }
+<span class="nc" id="L388">        paneParam01.getTfOfTable().get(0).setText(String.valueOf(price));</span>
+<span class="nc" id="L389">    }</span>
+
+    private void setSpentCash(double k) {
+<span class="nc" id="L392">        String price = &quot;&quot;;</span>
+<span class="nc bnc" id="L393" title="All 2 branches missed.">        if (k != -1) {</span>
+<span class="nc" id="L394">            price = String.valueOf(k);</span>
+        } else {
+<span class="nc" id="L396">            price = taInput.getText();</span>
+        }
+<span class="nc" id="L398">        paneParam01.getTfOfTable().get(1).setText(String.valueOf(price));</span>
+<span class="nc" id="L399">    }</span>
+
+    private void addCash() {
+<span class="nc" id="L402">        String price = taInput.getText();</span>
+<span class="nc" id="L403">        double oldCash = Double.parseDouble((String.valueOf(paneParam01.getTfOfTable().get(0).getText())));</span>
+<span class="nc" id="L404">        double newCash = Double.parseDouble(price);</span>
+<span class="nc" id="L405">        double cash = oldCash + newCash;</span>
+<span class="nc" id="L406">        paneParam01.getTfOfTable().get(0).setText(String.valueOf(cash));</span>
+<span class="nc" id="L407">    }</span>
+
+    private void buy() {
+<span class="nc" id="L410">        String data = taInput.getText();</span>
+<span class="nc" id="L411">        Proccesor test = new Proccesor(data);</span>
+<span class="nc" id="L412">        double cash = Double.parseDouble((String.valueOf(paneParam01.getTfOfTable().get(0).getText())));</span>
+<span class="nc bnc" id="L413" title="All 4 branches missed.">        if (test.getPrice() &lt; cash &amp;&amp; list.contains(test)) {</span>
+<span class="nc" id="L414">            list.remove(test);</span>
+<span class="nc" id="L415">            mylist.add(test);</span>
+
+<span class="nc" id="L417">            table.formTable(initialCapacity * 2 + 1, colWidth);</span>
+<span class="nc" id="L418">            String[][] modelList = list.getModelList();</span>
+<span class="nc" id="L419">            table.getItems().clear();</span>
+<span class="nc" id="L420">            table.setItems(FXCollections.observableArrayList(modelList));</span>
+
+<span class="nc" id="L422">            myTable.formTable(initialCapacity * 2 + 1, colWidth);</span>
+<span class="nc" id="L423">            modelList = mylist.getModelList();</span>
+<span class="nc" id="L424">            myTable.getItems().clear();</span>
+<span class="nc" id="L425">            myTable.setItems(FXCollections.observableArrayList(modelList));</span>
+            // Atnaujinamai maišos lentelės parametrai (geltona lentelė)
+<span class="nc" id="L427">            paneParam1.getTfOfTable().get(4).setText(String.valueOf(list.size()));</span>
+
+<span class="nc" id="L429">            cash -= test.getPrice();</span>
+<span class="nc" id="L430">            setCash(cash);</span>
+
+<span class="nc" id="L432">            double spentCash = Double.parseDouble((String.valueOf(paneParam01.getTfOfTable().get(1).getText())));</span>
+<span class="nc" id="L433">            spentCash += test.getPrice();</span>
+<span class="nc" id="L434">            setSpentCash(spentCash);</span>
+
+<span class="nc" id="L436">            KsGui.oun(taEvents, test, MESSAGES.getString(&quot;buy&quot;));</span>
+
+<span class="nc" id="L438">        } else {</span>
+<span class="nc" id="L439">            KsGui.oun(taEvents, test, MESSAGES.getString(&quot;errbuy&quot;));</span>
+        }
+
+<span class="nc" id="L442">    }</span>
+
+    private void sell() {
+<span class="nc" id="L445">        String data = taInput.getText();</span>
+<span class="nc" id="L446">        Proccesor test = new Proccesor(data);</span>
+<span class="nc" id="L447">        double cash = Double.parseDouble((String.valueOf(paneParam01.getTfOfTable().get(0).getText())));</span>
+<span class="nc bnc" id="L448" title="All 4 branches missed.">        if (test.getPrice() &lt; cash &amp;&amp; mylist.contains(test)) {</span>
+<span class="nc" id="L449">            mylist.remove(test);</span>
+<span class="nc" id="L450">            list.add(test);</span>
+
+<span class="nc" id="L452">            table.formTable(initialCapacity * 2 + 1, colWidth);</span>
+<span class="nc" id="L453">            String[][] modelList = list.getModelList();</span>
+<span class="nc" id="L454">            table.getItems().clear();</span>
+<span class="nc" id="L455">            table.setItems(FXCollections.observableArrayList(modelList));</span>
+
+<span class="nc" id="L457">            myTable.formTable(initialCapacity * 2 + 1, colWidth);</span>
+<span class="nc" id="L458">            modelList = mylist.getModelList();</span>
+<span class="nc" id="L459">            myTable.getItems().clear();</span>
+<span class="nc" id="L460">            myTable.setItems(FXCollections.observableArrayList(modelList));</span>
+            // Atnaujinamai maišos lentelės parametrai (geltona lentelė)
+<span class="nc" id="L462">            paneParam1.getTfOfTable().get(4).setText(String.valueOf(list.size()));</span>
+
+<span class="nc" id="L464">            cash += test.getPrice();</span>
+<span class="nc" id="L465">            setCash(cash);</span>
+
+<span class="nc" id="L467">            double spentCash = Double.parseDouble((String.valueOf(paneParam01.getTfOfTable().get(1).getText())));</span>
+<span class="nc" id="L468">            spentCash -= test.getPrice();</span>
+<span class="nc" id="L469">            setSpentCash(spentCash);</span>
+
+<span class="nc" id="L471">            KsGui.oun(taEvents, test, MESSAGES.getString(&quot;sale&quot;));</span>
+
+<span class="nc" id="L473">        } else {</span>
+<span class="nc" id="L474">            KsGui.oun(taEvents, test, MESSAGES.getString(&quot;errsale&quot;));</span>
+        }
+<span class="nc" id="L476">    }</span>
+
+    private void addForSelling() {
+<span class="nc" id="L479">        String data = taInput.getText();</span>
+<span class="nc" id="L480">        Proccesor test = new Proccesor(data);</span>
+
+<span class="nc" id="L482">        mylist.add(test);</span>
+
+<span class="nc" id="L484">        myTable.formTable(initialCapacity * 2 + 1, colWidth);</span>
+<span class="nc" id="L485">        String[][] modelList = mylist.getModelList();</span>
+<span class="nc" id="L486">        myTable.getItems().clear();</span>
+<span class="nc" id="L487">        myTable.setItems(FXCollections.observableArrayList(modelList));</span>
+<span class="nc" id="L488">    }</span>
+
+    private void mapGeneration(String filePath) {
+        // Išjungiami 2 ir 4 mygtukai
+<span class="nc" id="L492">        IntStream.of(2, 3, 4).forEach(p -&gt; paneButtons.getButtons().get(p).setDisable(true));</span>
+<span class="nc" id="L493">        IntStream.of(0).forEach(p -&gt; paneButton.getButtons().get(p).setDisable(true));</span>
+        // Duomenų nuskaitymas iš parametrų lentelės (žalios)    
+<span class="nc" id="L495">        readMapParameters();</span>
+        // Sukuriamas tuščias atvaizdis priklausomai nuo kolizijų tipo
+<span class="nc" id="L497">        createList();</span>
+        // Jei failas nenurodytas - generuojami automobiliai ir talpinami atvaizdyje
+<span class="nc bnc" id="L499" title="All 2 branches missed.">        if (filePath == null) {</span>
+<span class="nc" id="L500">            Proccesor[] proccesorsArray = proccesorsGenerator.generateShuffleProccesorsAndIds(sizeOfGenSet, sizeOfInitialSubSet);</span>
+<span class="nc bnc" id="L501" title="All 2 branches missed.">            for (Proccesor c : proccesorsArray) {</span>
+<span class="nc" id="L502">                list.add(c);</span>
+            }
+<span class="nc" id="L504">            KsGui.ounArgs(taEvents, MESSAGES.getString(&quot;mapPuts&quot;), list.size());</span>
+<span class="nc" id="L505">        } else { // Jei failas nurodytas skaitoma iš failo</span>
+<span class="nc" id="L506">            list.load(filePath);</span>
+<span class="nc bnc" id="L507" title="All 2 branches missed.">            if (list.isEmpty()) {</span>
+<span class="nc" id="L508">                KsGui.ounerr(taEvents, MESSAGES.getString(&quot;fileWasNotReadOrEmpty&quot;), filePath);</span>
+            } else {
+<span class="nc" id="L510">                KsGui.ou(taEvents, MESSAGES.getString(&quot;fileWasRead&quot;), filePath);</span>
+
+            }
+        }
+        // Atvaizdis rodomas lentelėje
+<span class="nc" id="L515">        table.formTable(initialCapacity * 2 + 1, colWidth);</span>
+<span class="nc" id="L516">        String[][] modelList = list.getModelList();</span>
+<span class="nc" id="L517">        table.getItems().clear();</span>
+<span class="nc" id="L518">        table.setItems(FXCollections.observableArrayList(modelList));</span>
+        // Atnaujinamai maišos lentelės parametrai (geltona lentelė)
+<span class="nc" id="L520">        paneParam1.getTfOfTable().get(4).setText(String.valueOf(list.size()));</span>
+        // Įjungiami 2 ir 4 mygtukai
+<span class="nc" id="L522">        IntStream.of(2, 3, 4).forEach(p -&gt; paneButtons.getButtons().get(p).setDisable(false));</span>
+<span class="nc" id="L523">        IntStream.of(0).forEach(p -&gt; paneButton.getButtons().get(p).setDisable(false));</span>
+
+<span class="nc" id="L525">    }</span>
+
+    private void clearListtable() {
+        
+<span class="nc" id="L529">        list.clear();</span>
+        // Atvaizdis rodomas lentelėje
+<span class="nc" id="L531">        table.formTable(initialCapacity * 2 + 1, colWidth);</span>
+<span class="nc" id="L532">        String[][] modelList = list.getModelList();</span>
+<span class="nc" id="L533">        table.getItems().clear();</span>
+<span class="nc" id="L534">        table.setItems(FXCollections.observableArrayList(modelList));</span>
+
+<span class="nc" id="L536">        IntStream.of(2, 3, 4).forEach(p -&gt; paneButtons.getButtons().get(p).setDisable(false));</span>
+
+<span class="nc" id="L538">        KsGui.ou(taEvents, MESSAGES.getString(&quot;clearedList&quot;));</span>
+
+<span class="nc" id="L540">    }</span>
+
+    private void createList() {
+
+<span class="nc" id="L544">        this.list = new ParsableUnrolledLinkedList&lt;&gt;(initialCapacity, Proccesor::new);</span>
+<span class="nc" id="L545">        this.mylist = new ParsableUnrolledLinkedList&lt;&gt;(initialCapacity, Proccesor::new);</span>
+
+<span class="nc" id="L547">    }</span>
+
+    private void readMapParameters() {
+<span class="nc" id="L550">        int i = 0;</span>
+<span class="nc" id="L551">        List&lt;TextField&gt; tfs = paneParam1.getTfOfTable();</span>
+
+<span class="nc" id="L553">        sizeOfInitialSubSet = notNegativeNumberVerifier(tfs.get(i++), &quot;badSizeOfInitialSubSet&quot;);</span>
+<span class="nc" id="L554">        sizeOfGenSet = notNegativeNumberVerifier(tfs.get(i++), &quot;badSizeOfGenSet&quot;);</span>
+<span class="nc" id="L555">        initialCapacity = notNegativeNumberVerifier(tfs.get(i++), &quot;badInitialCapacity&quot;);</span>
+<span class="nc" id="L556">        colWidth = notNegativeNumberVerifier(tfs.get(i), &quot;badColumnWidth&quot;);</span>
+<span class="nc" id="L557">    }</span>
+
+    private int notNegativeNumberVerifier(TextField tf, String errorMessage) {
+        int result;
+        try {
+<span class="nc" id="L562">            result = Integer.parseInt(tf.getText());</span>
+<span class="nc bnc" id="L563" title="All 2 branches missed.">            tf.setStyle(result &lt; 0 ? Panels.STYLE_ERROR : Panels.STYLE_COMMON);</span>
+<span class="nc bnc" id="L564" title="All 2 branches missed.">            if (result &lt; 0) {</span>
+<span class="nc" id="L565">                throw new ValidationException(errorMessage, tf.getText());</span>
+            }
+<span class="nc" id="L567">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L568">            tf.setStyle(Panels.STYLE_ERROR);</span>
+<span class="nc" id="L569">            throw new ValidationException(errorMessage, tf.getText());</span>
+<span class="nc" id="L570">        }</span>
+
+<span class="nc" id="L572">        return result;</span>
+    }
+
+    private void fileChooseMenu() {
+
+<span class="nc" id="L577">        FileChooser fc = new FileChooser();</span>
+        // Papildoma mūsų sukurtais filtrais
+<span class="nc" id="L579">        fc.getExtensionFilters().addAll(</span>
+                new FileChooser.ExtensionFilter(&quot;All Files&quot;, &quot;*.*&quot;),
+                new FileChooser.ExtensionFilter(&quot;txt&quot;, &quot;*.txt&quot;)
+        );
+<span class="nc" id="L583">        fc.setTitle((MESSAGES.getString(&quot;menuItem11&quot;)));</span>
+<span class="nc" id="L584">        fc.setInitialDirectory(new File(System.getProperty(&quot;user.dir&quot;)));</span>
+<span class="nc" id="L585">        File file = fc.showOpenDialog(stage);</span>
+<span class="nc bnc" id="L586" title="All 2 branches missed.">        if (file != null) {</span>
+<span class="nc" id="L587">            mapGeneration(file.getAbsolutePath());</span>
+        }
+
+<span class="nc" id="L590">    }</span>
+
+    private void fileSaveMenu() throws ValidationException, IOException {
+<span class="nc" id="L593">        FileChooser fc = new FileChooser();</span>
+<span class="nc" id="L594">        fc.getExtensionFilters().addAll(</span>
+                new FileChooser.ExtensionFilter(&quot;All Files&quot;, &quot;*.*&quot;),
+                new FileChooser.ExtensionFilter(&quot;txt&quot;, &quot;*.txt&quot;)
+        );
+<span class="nc" id="L598">        fc.setTitle((MESSAGES.getString(&quot;menuItem12&quot;)));</span>
+<span class="nc" id="L599">        fc.setInitialDirectory(new File(System.getProperty(&quot;user.dir&quot;)));</span>
+
+<span class="nc" id="L601">        File file = fc.showSaveDialog(stage);</span>
+<span class="nc bnc" id="L602" title="All 2 branches missed.">        if (file != null) {</span>
+<span class="nc" id="L603">            filesaver(file.getAbsolutePath());</span>
+        }
+
+<span class="nc" id="L606">    }</span>
+
+    private void filesaver(String filePath) throws ValidationException, IOException {
+//            Files.write(Paths.get(filePath), (Iterable)proccesorSet);
+<span class="nc" id="L610">        PrintWriter pw = new PrintWriter(filePath);</span>
+
+<span class="nc" id="L612">        Iterator&lt;Proccesor&gt; it = list.iterator();</span>
+<span class="nc bnc" id="L613" title="All 2 branches missed.">        while (it.hasNext()) {</span>
+<span class="nc" id="L614">            pw.println(it.next().ToString_data());</span>
+        }
+<span class="nc" id="L616">        pw.close();</span>
+
+<span class="nc" id="L618">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

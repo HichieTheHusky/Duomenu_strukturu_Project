@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Ks.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$UnrolledLinkedListTest.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.util</a> &gt; <span class="el_source">Ks.java</span></div><h1>Ks.java</h1><pre class="source lang-java linenums">package ds.proj.util;
+
+import java.io.*;
+import java.util.Arrays;
+
+/**
+ * Klasė yra skirta patogiam duomenų paėmimui iš klaviatūros bei efektyviam
+ * rezultatų pateikimui į sout ir serr srautus. Visi metodai yra statiniai ir
+ * skirti vienam duomenų tipui. Studentai savarankiškai paruošia metodus dėl
+ * short ir byte skaičių tipų.
+ *
+ * @author eimutis
+ */
+<span class="nc" id="L14">public class Ks { // KTU system - imituojama Javos System klasė</span>
+
+<span class="nc" id="L16">    private static final BufferedReader keyboard</span>
+            = new BufferedReader(new InputStreamReader(System.in));
+<span class="nc" id="L18">    private static String dataFolder = &quot;data&quot;;</span>
+
+    static public String giveString(String prompt) {
+<span class="nc" id="L21">        Ks.ou(prompt);</span>
+        try {
+<span class="nc" id="L23">            return keyboard.readLine();</span>
+<span class="nc" id="L24">        } catch (IOException e) {</span>
+<span class="nc" id="L25">            Ks.ern(&quot;Neveikia klaviatūros srautas, darbas baigtas&quot;);</span>
+<span class="nc" id="L26">            System.exit(0);</span>
+        }
+<span class="nc" id="L28">        return &quot;&quot;;</span>
+    }
+
+    static public long giveLong(String prompt) {
+        while (true) {
+<span class="nc" id="L33">            String s = giveString(prompt);</span>
+            try {
+<span class="nc" id="L35">                return Long.parseLong(s);</span>
+<span class="nc" id="L36">            } catch (NumberFormatException e) {</span>
+<span class="nc" id="L37">                Ks.ern(&quot;Neteisingas skaičiaus formatas, pakartokite&quot;);</span>
+            }
+<span class="nc" id="L39">        }</span>
+    }
+
+    static public long giveLong(String prompt, long bound1, long bound2) {
+        while (true) {
+<span class="nc" id="L44">            long a = giveLong(prompt + &quot; tarp ribų [&quot; + bound1 + &quot;:&quot; + bound2 + &quot;]=&quot;);</span>
+
+<span class="nc bnc" id="L46" title="All 2 branches missed.">            if (a &lt; bound1) {</span>
+<span class="nc" id="L47">                Ks.ern(&quot;Skaičius mažesnis nei leistina, pakartokite&quot;);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">            } else if (a &gt; bound2) {</span>
+<span class="nc" id="L49">                Ks.ern(&quot;Skaičius didesnis nei leistina, pakartokite&quot;);</span>
+            } else {
+<span class="nc" id="L51">                return a;</span>
+            }
+<span class="nc" id="L53">        }</span>
+    }
+
+    static public int giveInt(String prompt) {
+        while (true) {
+<span class="nc" id="L58">            long a = giveLong(prompt);</span>
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            if (a &lt; Integer.MIN_VALUE) {</span>
+<span class="nc" id="L61">                Ks.ern(&quot;Skaičius mažesnis nei Integer.MIN_VALUE&quot;</span>
+                        + &quot;, pakartokite&quot;);
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            } else if (a &gt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L64">                Ks.ern(&quot;Skaičius didesnis nei Integer.MAX_VALUE&quot;</span>
+                        + &quot;, pakartokite&quot;);
+            } else {
+<span class="nc" id="L67">                return (int) a;</span>
+            }
+<span class="nc" id="L69">        }</span>
+    }
+
+    static public int giveInt(String prompt, int bound1, int bound2) {
+<span class="nc" id="L73">        return (int) giveLong(prompt, bound1, bound2);</span>
+    }
+
+    static public double giveDouble(String prompt) {
+        while (true) {
+<span class="nc" id="L78">            String s = giveString(prompt);</span>
+            try {
+<span class="nc" id="L80">                return Double.parseDouble(s);</span>
+<span class="nc" id="L81">            } catch (NumberFormatException e) {</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                if (s.contains(&quot;,&quot;)) {</span>
+<span class="nc" id="L83">                    Ks.ern(&quot;Vietoje kablelio naudokite tašką&quot;</span>
+                            + &quot;, pakartokite&quot;);
+                } else {
+<span class="nc" id="L86">                    Ks.ern(&quot;Neteisingas skaičiaus formatas&quot;</span>
+                            + &quot;, pakartokite&quot;);
+                }
+            }
+<span class="nc" id="L90">        }</span>
+    }
+
+    static public double giveDouble(String prompt, double bound1, double bound2) {
+        while (true) {
+<span class="nc" id="L95">            double a = giveDouble(prompt + &quot; tarp ribų [&quot; + bound1 + &quot;:&quot; + bound2 + &quot;]=&quot;);</span>
+
+<span class="nc bnc" id="L97" title="All 2 branches missed.">            if (a &lt; bound1) {</span>
+<span class="nc" id="L98">                Ks.ern(&quot;Skaičius mažesnis nei leistina, pakartokite&quot;);</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            } else if (a &gt; bound2) {</span>
+<span class="nc" id="L100">                Ks.ern(&quot;Skaičius didesnis nei leistina, pakartokite&quot;);</span>
+            } else {
+<span class="nc" id="L102">                return a;</span>
+            }
+<span class="nc" id="L104">        }</span>
+    }
+
+    static public String giveFileName() {
+<span class="nc" id="L108">        File dir = new File(dataFolder);</span>
+<span class="nc" id="L109">        dir.mkdir();</span>
+<span class="nc" id="L110">        oun(&quot;Jums prieinami failai &quot; + Arrays.toString(dir.list()));</span>
+<span class="nc" id="L111">        String fn = giveString(&quot;Nurodykite pasirinktą duomenų failo vardą: &quot;);</span>
+<span class="nc" id="L112">        return (fn);</span>
+    }
+
+    static public String getDataFolder() {
+<span class="nc" id="L116">        return dataFolder;</span>
+    }
+
+    static public void setDataFolder(String folderName) {
+<span class="nc" id="L120">        dataFolder = folderName;</span>
+<span class="nc" id="L121">    }</span>
+
+<span class="nc" id="L123">    private static final PrintStream sout = System.out;</span>
+<span class="nc" id="L124">    private static final PrintStream serr = System.out;</span>
+    private static int lineNr;
+    private static int errorNr;
+    private static final boolean formatStartOfLine = true;
+
+    static public void ou(Object obj) {
+        if (formatStartOfLine) {
+<span class="nc" id="L131">            sout.printf(&quot;%2d| %s&quot;, ++lineNr, obj);</span>
+        } else {
+            sout.println(obj);
+        }
+<span class="nc" id="L135">    }</span>
+
+    static public void oun(Object obj) {
+        if (formatStartOfLine) {
+<span class="nc" id="L139">            sout.printf(&quot;%2d| %s\n&quot;, ++lineNr, obj);</span>
+        } else {
+            sout.println(obj);
+        }
+<span class="nc" id="L143">    }</span>
+
+    static public void ounn(Object obj) {
+        if (formatStartOfLine) {
+<span class="nc" id="L147">            sout.printf(&quot;%s\n&quot;, obj);</span>
+        } else {
+            sout.println(obj);
+        }
+<span class="nc" id="L151">    }</span>
+
+    static public void oufln(String format, Object... args) {
+<span class="nc" id="L154">        sout.printf(format, args);</span>
+<span class="nc" id="L155">        sout.println();</span>
+<span class="nc" id="L156">    }</span>
+
+    static public void out(Object obj) {
+<span class="nc" id="L159">        sout.print(obj);</span>
+<span class="nc" id="L160">    }</span>
+
+    static public void ouf(String format, Object... args) {
+<span class="nc" id="L163">        sout.printf(format, args);</span>
+<span class="nc" id="L164">    }</span>
+
+    static public void er(Object obj) {
+<span class="nc" id="L167">        serr.printf(&quot;***Klaida %d: %s&quot;, ++errorNr, obj);</span>
+<span class="nc" id="L168">    }</span>
+
+    static public void ern(Object obj) {
+<span class="nc" id="L171">        serr.printf(&quot;***Klaida %d: %s\n&quot;, ++errorNr, obj);</span>
+<span class="nc" id="L172">    }</span>
+
+    static public void erf(String format, Object... args) {
+<span class="nc" id="L175">        serr.printf(format, args);</span>
+<span class="nc" id="L176">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

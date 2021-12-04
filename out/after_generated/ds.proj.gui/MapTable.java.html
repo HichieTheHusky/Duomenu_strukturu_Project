@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MapTable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$ds_proj_in_Duomenu_strukturu_Project.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.gui</a> &gt; <span class="el_source">MapTable.java</span></div><h1>MapTable.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ds.proj.gui;
+
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableView;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+
+/**
+ *
+ * @param &lt;S&gt;
+ * @param &lt;T&gt;
+ */
+public abstract class MapTable&lt;S, T&gt; extends TableView&lt;S&gt; {
+
+    public MapTable() {
+<span class="nc" id="L25">        super();</span>
+<span class="nc" id="L26">        setPlaceholder(new Label(&quot;&quot;));</span>
+<span class="nc" id="L27">    }</span>
+
+    public void formTable(int numberOfColumns, int colWidth) {
+<span class="nc" id="L30">        getColumns().clear();</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        for (int i = 0; i &lt; numberOfColumns; i++) {</span>
+<span class="nc bnc" id="L32" title="All 4 branches missed.">            String columnTitle = (i == 0) ? &quot;#&quot; : ((i % 2 == 0) ? &quot;(&quot; + ((i - 1) / 2 + 1) + &quot;)&quot; : &quot;&quot;);</span>
+<span class="nc" id="L33">            TableColumn&lt;S, T&gt; col = new TableColumn&lt;&gt;(columnTitle);</span>
+<span class="nc" id="L34">            col.setSortable(false);</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">            if (i == 0) {</span>
+                // Pirmo stulpelio plotis
+<span class="nc" id="L37">                col.setPrefWidth(50);</span>
+            } else {
+                // Nelyginio stulpelio (su rodykle --&gt;) plotis - 35
+<span class="nc bnc" id="L40" title="All 2 branches missed.">                col.setPrefWidth(i % 2 != 0 ? 35 : colWidth);</span>
+            }
+<span class="nc bnc" id="L42" title="All 4 branches missed.">            final boolean toAlign = (i == 0 || i % 2 != 0);</span>
+<span class="nc" id="L43">            col.setCellFactory(p -&gt; new TableCell&lt;S, T&gt;() {</span>
+                @Override
+                protected void updateItem(T item, boolean empty) {
+<span class="nc" id="L46">                    super.updateItem(item, empty);</span>
+<span class="nc bnc" id="L47" title="All 6 branches missed.">                    if (empty || item == null || item.toString().isEmpty()) {</span>
+<span class="nc" id="L48">                        setText(null);</span>
+<span class="nc" id="L49">                        setTooltip(null);</span>
+<span class="nc" id="L50">                        setStyle(Panels.TABLE_CELL_STYLE_EMPTY);</span>
+<span class="nc" id="L51">                        setGraphic(null);</span>
+                    } else {
+<span class="nc" id="L53">                        setText(item.toString());</span>
+<span class="nc" id="L54">                        setTooltip(new Tooltip(item.toString()));</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">                        setAlignment(toAlign ? Pos.CENTER : Pos.CENTER_LEFT);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">                        if (!&quot;--&gt;&quot;.equals(item.toString())) {</span>
+<span class="nc" id="L57">                            setStyle(Panels.TABLE_CELL_STYLE_FILLED);</span>
+                        } else {
+<span class="nc" id="L59">                            setStyle(Panels.TABLE_CELL_STYLE_EMPTY);</span>
+                        }
+                    }
+<span class="nc" id="L62">                }</span>
+            });
+
+<span class="nc" id="L65">            col.setCellValueFactory(this::returnValue);</span>
+<span class="nc" id="L66">            col.setId(String.valueOf(i));</span>
+<span class="nc" id="L67">            getColumns().add(col);</span>
+        }
+<span class="nc" id="L69">        getColumns().add(new TableColumn&lt;&gt;());</span>
+<span class="nc" id="L70">    }</span>
+
+    public abstract ObservableValue&lt;T&gt; returnValue(CellDataFeatures&lt;S, T&gt; p);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

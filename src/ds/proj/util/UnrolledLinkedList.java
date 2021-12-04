@@ -7,10 +7,7 @@ package ds.proj.util;
 
 //import com.sun.xml.internal.bind.v2.TODO;
 import java.io.Serializable;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  *
@@ -75,7 +72,6 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
      * Prideda specifikuota elementa i saraso gala
      *
      * @param e elementas kuris bus idetas
-     * @return <code>true</code> (paremtas pagal {@link Collection#add})
      */
     @Override
     public boolean add(E e) {
@@ -124,7 +120,6 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
      * pridejimo eiliskumas yra nustatytas pagal paduotos kolekcijos savo turima
      * iteratoriu.
      *
-     * @param index
      * @param c collection su elementais kurie bus prideti i si sarasa
      * @return <code>true</code> jeigu sis sarasas buvo pakeistas del sios
      * klases metodo iskvietimo
@@ -748,7 +743,7 @@ public class UnrolledLinkedList<E> extends AbstractList<E> implements List<E>, S
          */
         Object[] elements;
 
-        /**
+        /**1
          * Constructs a new node.
          */
         Node() {

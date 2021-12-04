@@ -20,7 +20,6 @@ public interface ParsableList<V> {
     /**
      * Grąžina maišos lentelės turinį, skirtą atvaizdavimui JavaFX lentelėse
      *
-     * @param delimiter Poros toString() eilutės kirtiklis
      * @return Grąžina maišos lentelės turinį dvimačiu masyvu
      */
     String[][] getModelList();

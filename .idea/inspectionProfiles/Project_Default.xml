@@ -1,0 +1,11 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="SSBasedInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <searchConfiguration name="System.out" problemDescriptor="Printing to system.out  should not happen in graphics program" text="System.out" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default">
+        <constraint name="__context__" within="" contains="" />
+      </searchConfiguration>
+    </inspection_tool>
+    <inspection_tool class="bb1c3f2e-a781-363d-ba2b-b92b06a2061f" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+  </profile>
+</component>

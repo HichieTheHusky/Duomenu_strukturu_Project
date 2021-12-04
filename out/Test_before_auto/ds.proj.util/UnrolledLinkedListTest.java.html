@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnrolledLinkedListTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Duomenu_strukturu_Project$UnrolledLinkedListTest.exec</a> &gt; <a href="index.source.html" class="el_package">ds.proj.util</a> &gt; <span class="el_source">UnrolledLinkedListTest.java</span></div><h1>UnrolledLinkedListTest.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ds.proj.util;
+
+import ds.proj.demo.Proccesor;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Iterator;
+import java.util.ListIterator;
+
+/**
+ *
+ * @author husky
+ */
+<span class="fc" id="L20">public class UnrolledLinkedListTest {</span>
+
+    private static UnrolledLinkedList&lt;Proccesor&gt; list;
+
+<span class="fc" id="L24">    private static final Proccesor c1 = new Proccesor(&quot;GPU&quot;, &quot;Nvidia&quot;, &quot;RTX_2080_super&quot;, 2019, 589);</span>
+<span class="fc" id="L25">    private static final Proccesor c2 = new Proccesor(&quot;GPU&quot;, &quot;Nvidia&quot;, &quot;RTX_2080&quot;, 2018, 539);</span>
+<span class="fc" id="L26">    private static final Proccesor c3 = new Proccesor(&quot;GPU&quot;, &quot;Nvidia&quot;, &quot;GTX_1080TI&quot;, 2017, 599);</span>
+<span class="fc" id="L27">    private static final Proccesor c4 = new Proccesor(&quot;GPU AMD vega_56 2017 449&quot;);</span>
+<span class="fc" id="L28">    private static final Proccesor c5 = new Proccesor(&quot;GPU AMD vega_64 2017 599&quot;);</span>
+<span class="fc" id="L29">    private static final Proccesor c6 = new Proccesor(&quot;GPU AMD rx570 2017 399&quot;);</span>
+
+    public static void create() {
+<span class="fc" id="L32">        list = new UnrolledLinkedList&lt;&gt;();</span>
+<span class="fc" id="L33">        list.add(c1);</span>
+<span class="fc" id="L34">        list.add(c2);</span>
+<span class="fc" id="L35">        list.add(c3);</span>
+<span class="fc" id="L36">        list.add(c4);</span>
+<span class="fc" id="L37">        list.add(c5);</span>
+<span class="fc" id="L38">        list.add(c6);</span>
+<span class="fc" id="L39">    }</span>
+
+//    public UnrolledLinkedListTest() {
+//
+//    }
+//    
+    @Before
+    public void setUp() {
+<span class="fc" id="L47">        create();</span>
+<span class="fc" id="L48">    }</span>
+//    
+//    @AfterAll
+//    public static void tearDownClass() {
+//    }
+//    
+//    @Before
+//    public void setUp() {
+//    }
+//    
+//    @AfterEach
+//    public void tearDown() {
+//    }
+
+    /**
+     * Test of add method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testAdd_GenericType() {
+<span class="fc" id="L67">        System.out.println(&quot;add&quot;);</span>
+<span class="fc" id="L68">        Proccesor e = new Proccesor(&quot;GPU Nvidia gtx_760 2017 250&quot;);</span>
+<span class="fc" id="L69">        boolean expResult = true;</span>
+<span class="fc" id="L70">        boolean result = list.add(e);</span>
+
+<span class="fc" id="L72">        Assert.assertEquals(expResult, result);</span>
+<span class="fc" id="L73">        Assert.assertEquals(e, list.get(list.size() - 1));</span>
+<span class="fc" id="L74">    }</span>
+
+    /**
+     * Test of add method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testAdd_int_GenericType() {
+<span class="fc" id="L81">        System.out.println(&quot;addToIndex&quot;);</span>
+<span class="fc" id="L82">        int index = 1;</span>
+<span class="fc" id="L83">        Proccesor e = new Proccesor(&quot;GPU Nvidia gtx_780 2017 500&quot;);</span>
+<span class="fc" id="L84">        list.add(index, e);</span>
+<span class="fc" id="L85">        Assert.assertEquals(e, list.get(index));</span>
+
+<span class="fc" id="L87">    }</span>
+
+    /**
+     * Test of addAll method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testAddAll_List() {
+<span class="fc" id="L94">        System.out.println(&quot;addAll&quot;);</span>
+<span class="fc" id="L95">        UnrolledLinkedList instance = new UnrolledLinkedList();</span>
+<span class="fc" id="L96">        Proccesor e1 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 100&quot;);</span>
+<span class="fc" id="L97">        Proccesor e2 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 200&quot;);</span>
+<span class="fc" id="L98">        Proccesor e3 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 300&quot;);</span>
+<span class="fc" id="L99">        instance.add(e1);</span>
+<span class="fc" id="L100">        instance.add(e2);</span>
+<span class="fc" id="L101">        instance.add(e3);</span>
+
+<span class="fc" id="L103">        boolean expResult = true;</span>
+<span class="fc" id="L104">        boolean result = list.addAll(instance);</span>
+
+<span class="fc" id="L106">        Assert.assertEquals(expResult, result);</span>
+<span class="fc" id="L107">        Assert.assertEquals(e1, list.get(list.size() - 3));</span>
+<span class="fc" id="L108">        Assert.assertEquals(e2, list.get(list.size() - 2));</span>
+<span class="fc" id="L109">        Assert.assertEquals(e3, list.get(list.size() - 1));</span>
+
+<span class="fc" id="L111">    }</span>
+
+    /**
+     * Test of addAll method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testAddAll_int_List() {
+<span class="fc" id="L118">        System.out.println(&quot;addAllIndex&quot;);</span>
+<span class="fc" id="L119">        UnrolledLinkedList instance = new UnrolledLinkedList();</span>
+<span class="fc" id="L120">        Proccesor e1 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 100&quot;);</span>
+<span class="fc" id="L121">        Proccesor e2 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 200&quot;);</span>
+<span class="fc" id="L122">        Proccesor e3 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 300&quot;);</span>
+<span class="fc" id="L123">        instance.add(e1);</span>
+<span class="fc" id="L124">        instance.add(e2);</span>
+<span class="fc" id="L125">        instance.add(e3);</span>
+
+<span class="fc" id="L127">        boolean expResult = true;</span>
+<span class="fc" id="L128">        boolean result = list.addAll(2, instance);</span>
+<span class="fc" id="L129">        Assert.assertEquals(expResult, result);</span>
+<span class="fc" id="L130">        Assert.assertEquals(e1, list.get(2));</span>
+<span class="fc" id="L131">        Assert.assertEquals(e2, list.get(3));</span>
+<span class="fc" id="L132">        Assert.assertEquals(e3, list.get(4));</span>
+
+<span class="fc" id="L134">    }</span>
+
+    /**
+     * Test of clear method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testClear() {
+<span class="fc" id="L141">        System.out.println(&quot;clear&quot;);</span>
+<span class="fc" id="L142">        Iterator&lt;Proccesor&gt; it = list.iterator();</span>
+<span class="fc" id="L143">        UnrolledLinkedList instance = new UnrolledLinkedList();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        while (it.hasNext()) {</span>
+<span class="fc" id="L145">            instance.add(it.next());</span>
+        }
+<span class="fc" id="L147">        instance.clear();</span>
+<span class="fc" id="L148">        Assert.assertEquals(0, instance.size());</span>
+<span class="fc" id="L149">        Assert.assertEquals(null, instance.firstNode.next);</span>
+<span class="fc" id="L150">        Assert.assertEquals(0, instance.firstNode.numElements);</span>
+
+<span class="fc" id="L152">    }</span>
+
+    /**
+     * Test of get method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testGet() {
+<span class="fc" id="L159">        System.out.println(&quot;get&quot;);</span>
+<span class="fc" id="L160">        int index = 5;</span>
+<span class="fc" id="L161">        Object expResult = c6;</span>
+<span class="fc" id="L162">        Object result = list.get(index);</span>
+<span class="fc" id="L163">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L165">    }</span>
+
+    /**
+     * Test of hashCode method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testHashCode() {
+<span class="fc" id="L172">        System.out.println(&quot;hashCode&quot;);</span>
+<span class="fc" id="L173">        UnrolledLinkedList instance = new UnrolledLinkedList();</span>
+<span class="fc" id="L174">        int expResult = 1;</span>
+<span class="fc" id="L175">        int result = instance.hashCode();</span>
+<span class="fc" id="L176">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L178">    }</span>
+
+    /**
+     * Test of indexOf method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testIndexOf() {
+<span class="fc" id="L185">        System.out.println(&quot;indexOf&quot;);</span>
+<span class="fc" id="L186">        Object o = null;</span>
+<span class="fc" id="L187">        int expResult1 = 4;</span>
+<span class="fc" id="L188">        int expResult2 = -1;</span>
+<span class="fc" id="L189">        int result1 = list.indexOf(c5);</span>
+<span class="fc" id="L190">        int result2 = list.indexOf(&quot;test&quot;);</span>
+<span class="fc" id="L191">        Assert.assertEquals(expResult1, result1);</span>
+<span class="fc" id="L192">        Assert.assertEquals(expResult2, result2);</span>
+
+<span class="fc" id="L194">    }</span>
+
+    /**
+     * Test of lastIndexOf method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testLastIndexOf() {
+<span class="fc" id="L201">        System.out.println(&quot;lastIndexOf&quot;);</span>
+<span class="fc" id="L202">        list.add(c4);</span>
+<span class="fc" id="L203">        int expResult = 6;</span>
+<span class="fc" id="L204">        int result = list.lastIndexOf(c4);</span>
+<span class="fc" id="L205">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L207">    }</span>
+
+    /**
+     * Test of iterator method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testIterator() {
+<span class="fc" id="L214">        System.out.println(&quot;iterator&quot;);</span>
+<span class="fc" id="L215">        Proccesor expResult = c1;</span>
+<span class="fc" id="L216">        Proccesor result = list.iterator().next();</span>
+<span class="fc" id="L217">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L219">        UnrolledLinkedList instance = new UnrolledLinkedList();</span>
+<span class="fc" id="L220">        Assert.assertEquals(false, instance.iterator().hasNext());</span>
+
+<span class="fc" id="L222">    }</span>
+
+    /**
+     * Test of listIterator method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testListIterator_int() {
+<span class="fc" id="L229">        System.out.println(&quot;listIterator&quot;);</span>
+<span class="fc" id="L230">        int index = 1;</span>
+<span class="fc" id="L231">        Proccesor expResult = c2;</span>
+<span class="fc" id="L232">        ListIterator iter = list.listIterator(index);</span>
+<span class="fc" id="L233">        Proccesor result = list.listIterator(index).next();</span>
+<span class="fc" id="L234">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L236">    }</span>
+
+    /**
+     * Test of remove method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testRemove_int() {
+<span class="fc" id="L243">        System.out.println(&quot;removeIndex&quot;);</span>
+<span class="fc" id="L244">        int index = 1;</span>
+<span class="fc" id="L245">        Object expResult = c2;</span>
+<span class="fc" id="L246">        Object result = list.remove(index);</span>
+<span class="fc" id="L247">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L249">    }</span>
+
+    /**
+     * Test of remove method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testRemove_Object() {
+<span class="fc" id="L256">        System.out.println(&quot;removeObject&quot;);</span>
+<span class="fc" id="L257">        Object o = &quot;test&quot;;</span>
+<span class="fc" id="L258">        boolean result1 = list.remove(c2);</span>
+<span class="fc" id="L259">        boolean result2 = list.remove(o);</span>
+<span class="fc" id="L260">        Assert.assertEquals(true, result1);</span>
+<span class="fc" id="L261">        Assert.assertEquals(false, result2);</span>
+
+<span class="fc" id="L263">    }</span>
+
+    /**
+     * Test of removeAll method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testRemoveAll() {
+<span class="fc" id="L270">        System.out.println(&quot;removeAll&quot;);</span>
+<span class="fc" id="L271">        UnrolledLinkedList c1 = new UnrolledLinkedList();</span>
+<span class="fc" id="L272">        Proccesor e1 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 100&quot;);</span>
+<span class="fc" id="L273">        Proccesor e2 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 200&quot;);</span>
+<span class="fc" id="L274">        Proccesor e3 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 300&quot;);</span>
+<span class="fc" id="L275">        c1.add(e1);</span>
+<span class="fc" id="L276">        c1.add(e2);</span>
+<span class="fc" id="L277">        c1.add(e3);</span>
+<span class="fc" id="L278">        UnrolledLinkedList c2 = new UnrolledLinkedList();</span>
+<span class="fc" id="L279">        c2.add(c2);</span>
+<span class="fc" id="L280">        c2.add(c3);</span>
+<span class="fc" id="L281">        c2.add(c4);</span>
+
+<span class="fc" id="L283">        boolean expResult = false;</span>
+<span class="fc" id="L284">        boolean result = list.removeAll(c1);</span>
+<span class="fc" id="L285">        Assert.assertEquals(expResult, result);</span>
+<span class="fc" id="L286">        expResult = true;</span>
+<span class="fc" id="L287">        result = list.removeAll(c2);</span>
+<span class="fc" id="L288">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L290">    }</span>
+
+    /**
+     * Test of retainAll method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testRetainAll() {
+<span class="fc" id="L297">        System.out.println(&quot;retainAll&quot;);</span>
+<span class="fc" id="L298">        UnrolledLinkedList c = new UnrolledLinkedList();</span>
+<span class="fc" id="L299">        c.add(c2);</span>
+<span class="fc" id="L300">        c.add(c3);</span>
+<span class="fc" id="L301">        c.add(c4);</span>
+
+<span class="fc" id="L303">        boolean expResult = true;</span>
+<span class="fc" id="L304">        boolean result = list.retainAll(c);</span>
+<span class="fc" id="L305">        Assert.assertEquals(expResult, result);</span>
+<span class="fc" id="L306">        expResult = false;</span>
+<span class="fc" id="L307">        result = list.retainAll(list);</span>
+<span class="fc" id="L308">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L310">    }</span>
+
+    /**
+     * Test of set method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testSet() {
+<span class="fc" id="L317">        System.out.println(&quot;set&quot;);</span>
+<span class="fc" id="L318">        int index = 2;</span>
+<span class="fc" id="L319">        Proccesor e3 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 300&quot;);</span>
+<span class="fc" id="L320">        Proccesor expResult = c3;</span>
+<span class="fc" id="L321">        Object result = list.set(index, e3);</span>
+<span class="fc" id="L322">        Assert.assertEquals(expResult, result);</span>
+<span class="fc" id="L323">        expResult = e3;</span>
+<span class="fc" id="L324">        Assert.assertEquals(expResult, list.get(index));</span>
+
+<span class="fc" id="L326">    }</span>
+
+    /**
+     * Test of size method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testSize() {
+<span class="fc" id="L333">        System.out.println(&quot;size&quot;);</span>
+<span class="fc" id="L334">        UnrolledLinkedList instance = new UnrolledLinkedList();</span>
+<span class="fc" id="L335">        int expResult = 0;</span>
+<span class="fc" id="L336">        int result = instance.size();</span>
+<span class="fc" id="L337">        Assert.assertEquals(expResult, result);</span>
+<span class="fc" id="L338">        expResult = 6;</span>
+<span class="fc" id="L339">        result = list.size();</span>
+<span class="fc" id="L340">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L342">    }</span>
+
+    /**
+     * Test of toArray method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testToArray_0args() {
+<span class="fc" id="L349">        System.out.println(&quot;toArray&quot;);</span>
+<span class="fc" id="L350">        Object[] expResult = {c1, c2, c3, c4, c5, c6};</span>
+<span class="fc" id="L351">        Object[] result = list.toArray();</span>
+<span class="fc" id="L352">        Assert.assertArrayEquals(expResult, result);</span>
+
+<span class="fc" id="L354">    }</span>
+
+    /**
+     * Test of toArray method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testToArray_GenericType() {
+<span class="fc" id="L361">        System.out.println(&quot;toArray&quot;);</span>
+<span class="fc" id="L362">        Proccesor[] a = {};</span>
+<span class="fc" id="L363">        Proccesor[] expResulta = {c1, c2, c3, c4, c5, c6};</span>
+<span class="fc" id="L364">        Proccesor[] resulta = list.toArray(a);</span>
+<span class="fc" id="L365">        Assert.assertArrayEquals(expResulta, resulta);</span>
+
+<span class="fc" id="L367">        Proccesor e1 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 100&quot;);</span>
+<span class="fc" id="L368">        Proccesor e2 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 200&quot;);</span>
+<span class="fc" id="L369">        Proccesor e3 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 300&quot;);</span>
+<span class="fc" id="L370">        Proccesor[] b = {e1, e2, e3};</span>
+<span class="fc" id="L371">        Proccesor[] resultb = list.toArray(b);</span>
+<span class="fc" id="L372">        Assert.assertArrayEquals(expResulta, resultb);</span>
+
+<span class="fc" id="L374">        Proccesor[] c = new Proccesor[10];</span>
+<span class="fc" id="L375">        Proccesor[] resultc = list.toArray(c);</span>
+<span class="fc" id="L376">        Assert.assertArrayEquals(expResulta, resultb);</span>
+
+<span class="fc" id="L378">    }</span>
+
+    /**
+     * Test of contains method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testContains() {
+<span class="fc" id="L385">        System.out.println(&quot;contains&quot;);</span>
+<span class="fc" id="L386">        Object o = null;</span>
+<span class="fc" id="L387">        boolean expResult = false;</span>
+<span class="fc" id="L388">        boolean result = list.contains(o);</span>
+<span class="fc" id="L389">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L391">        o = c1;</span>
+<span class="fc" id="L392">        expResult = true;</span>
+<span class="fc" id="L393">        result = list.contains(o);</span>
+<span class="fc" id="L394">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L396">    }</span>
+
+    /**
+     * Test of containsAll method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testContainsAll() {
+<span class="fc" id="L403">        System.out.println(&quot;containsAll&quot;);</span>
+<span class="fc" id="L404">        UnrolledLinkedList c = new UnrolledLinkedList();</span>
+<span class="fc" id="L405">        c.add(c1);</span>
+<span class="fc" id="L406">        c.add(c2);</span>
+<span class="fc" id="L407">        c.add(c3);</span>
+
+<span class="fc" id="L409">        boolean expResult = true;</span>
+<span class="fc" id="L410">        boolean result = list.containsAll(c);</span>
+<span class="fc" id="L411">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L413">        Proccesor e1 = new Proccesor(&quot;GPU Nvidia gtx_780 2017 100&quot;);</span>
+<span class="fc" id="L414">        c.add(e1);</span>
+<span class="fc" id="L415">        expResult = false;</span>
+<span class="fc" id="L416">        result = list.containsAll(c);</span>
+<span class="fc" id="L417">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L419">    }</span>
+
+    /**
+     * Test of isEmpty method, of class UnrolledLinkedList.
+     */
+    @Test
+    public void testIsEmpty() {
+<span class="fc" id="L426">        System.out.println(&quot;isEmpty&quot;);</span>
+<span class="fc" id="L427">        UnrolledLinkedList instance = new UnrolledLinkedList();</span>
+<span class="fc" id="L428">        boolean expResult = true;</span>
+<span class="fc" id="L429">        boolean result = instance.isEmpty();</span>
+<span class="fc" id="L430">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L432">        expResult = false;</span>
+<span class="fc" id="L433">        result = list.isEmpty();</span>
+<span class="fc" id="L434">        Assert.assertEquals(expResult, result);</span>
+
+<span class="fc" id="L436">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
